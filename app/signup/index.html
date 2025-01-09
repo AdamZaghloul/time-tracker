@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Time Tracker</title>
         <link rel="icon" type="image/x-icon" href="/images/favicon.svg">
-        <link rel="stylesheet" href="styles.css" />
-        <script src="app.js" defer></script>
+        <link rel="stylesheet" href="../styles.css" />
+        <script src="../app.js" defer></script>
     </head>
     <body>
         <div class="nav-bar">
@@ -18,7 +18,7 @@
         </div>
 
         <div id="auth-section">
-            <h2>Login</h2>
+            <h2>Signup</h2>
             <form id="login-form">
                 <input
                     class="input-area"
@@ -34,8 +34,15 @@
                     placeholder="Password"
                     required
                 />
+                <input
+                    class="input-area"
+                    type="password"
+                    id="confirm-password"
+                    placeholder="Confirm Password"
+                    required
+                />
                 <div class="button-container">
-                    <button type="submit">Login</button>
+                    <button type="submit">Signup</button>
                 </div>
             </form>
         </div>
