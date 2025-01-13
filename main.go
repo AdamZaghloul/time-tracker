@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/AdamZaghloul/time-tracker/internal/database"
 	"github.com/joho/godotenv"
 )
 
@@ -16,7 +17,7 @@ type Client struct {
 type apiConfig struct {
 	filePathRoot string
 	port         string
-	db           *Client
+	db           database.Queries
 }
 
 func main() {
@@ -42,7 +43,15 @@ func main() {
 		log.Fatal("Unable to connect to database")
 	}
 
-	dbClient := Client{db}
+	defer db.Close()
+
+	//Test DB Connection
+	err = db.Ping()
+	if err != nil {
+		log.Fatal("Unable to ping database")
+	}
+
+	dbQueries := database.New(db)
 
 	mux := http.NewServeMux()
 	appHandler := http.FileServer(http.Dir(filePathRoot))
@@ -56,8 +65,10 @@ func main() {
 	cfg := apiConfig{
 		filePathRoot: filePathRoot,
 		port:         port,
-		db:           &dbClient,
+		db:           *dbQueries,
 	}
+
+	mux.Handle("POST /api/users", http.HandlerFunc(cfg.handlerUserCreate))
 
 	log.Printf("Serving on: http://localhost:%s\n", port)
 	log.Fatal(srv.ListenAndServe())
