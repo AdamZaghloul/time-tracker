@@ -8,6 +8,7 @@ import (
 
 	"github.com/AdamZaghloul/time-tracker/internal/database"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 type Client struct {

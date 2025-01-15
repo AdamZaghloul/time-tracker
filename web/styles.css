@@ -6,6 +6,7 @@
     --input-bg: #2a2a2a;
     --input-border: #444;
     --button-bg: #2695a6;
+    --button-bg-disabled: #494e4f;
     --button-hover: #256f7a;
 }
 
@@ -87,6 +88,10 @@ button {
 
 button:hover {
     background-color: var(--button-hover);
+}
+
+button[disabled=true], button:disabled{
+    background-color: var(--button-bg-disabled)
 }
 
 .button-container {
