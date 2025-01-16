@@ -13,6 +13,29 @@ document
         await login();
     });
 
-async function login(){
+async function login(email, password){
+    try{
+        const res = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({email, password}),
 
+        });
+
+        const data = await res.json();
+        if(!res.ok){
+            throw new Error(`Failed to login: ${data.error}`);
+        }
+
+        if(data.token){
+            localStorage.setItem("token", data.token);
+            window.location='/app';
+        }else{
+            alert("Login failed. Please check your credentials.");
+        }
+    } catch(error){
+        alert(`Error: ${error.message}`);
+    }
 }

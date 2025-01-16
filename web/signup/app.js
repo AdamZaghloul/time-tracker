@@ -25,7 +25,7 @@ async function signup(){
         }
 
         console.log("User created!");
-        await login();
+        await middleware_login(email, password);
     }catch (error){
         alert(`Error: ${error.message}`)
     }

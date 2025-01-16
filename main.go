@@ -19,6 +19,7 @@ type apiConfig struct {
 	filePathRoot string
 	port         string
 	db           database.Queries
+	jwtSecret    string
 }
 
 func main() {
@@ -35,7 +36,7 @@ func main() {
 	}
 
 	dbString := os.Getenv("DB_STRING")
-	if port == "" {
+	if dbString == "" {
 		log.Fatal("DB_STRING env variable not set")
 	}
 
@@ -54,6 +55,11 @@ func main() {
 
 	dbQueries := database.New(db)
 
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		log.Fatal("JWT_SECRET env variable not set")
+	}
+
 	mux := http.NewServeMux()
 	appHandler := http.FileServer(http.Dir(filePathRoot))
 	mux.Handle("/", appHandler)
@@ -67,6 +73,7 @@ func main() {
 		filePathRoot: filePathRoot,
 		port:         port,
 		db:           *dbQueries,
+		jwtSecret:    jwtSecret,
 	}
 
 	mux.Handle("POST /api/users", http.HandlerFunc(cfg.handlerUserCreate))
