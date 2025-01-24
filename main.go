@@ -77,6 +77,7 @@ func main() {
 	}
 
 	mux.Handle("POST /api/users", http.HandlerFunc(cfg.handlerUserCreate))
+	mux.Handle("POST /api/login", http.HandlerFunc(cfg.handlerLogin))
 
 	log.Printf("Serving on: http://localhost:%s\n", port)
 	log.Fatal(srv.ListenAndServe())

@@ -6,6 +6,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+document
+  .getElementById("signup-form")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await signup();
+  });
+
 async function signup(){
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
@@ -25,7 +32,7 @@ async function signup(){
         }
 
         console.log("User created!");
-        await middleware_login(email, password);
+        await login(email, password);
     }catch (error){
         alert(`Error: ${error.message}`)
     }

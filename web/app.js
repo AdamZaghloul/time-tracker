@@ -10,7 +10,9 @@ document
     .getElementById("login-form")
     .addEventListener("submit", async (event) => {
         event.preventDefault();
-        await login();
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        await login(email, password);
     });
 
 async function login(email, password){
