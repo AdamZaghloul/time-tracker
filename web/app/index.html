@@ -14,24 +14,29 @@
                 Time Tracker
                 <span class="subtitle">Know your time.</span>
             </h1>
+            <ul>
+                <li><a href="#" class="selected">Track</a></li>
+                <li><a href="#">Log</a></li>
+                <li><a href="#">Dashboard</a></li>
+            </ul>
             <button onclick="logout();" type="button">Logout</button>
         </div>
 
-        <div id="auth-section">
-            <h2>Signup</h2>
-            <form id="signup-form">
+        <div id="track-section" class="content">
+            <h2>Track Time</h2>
+            <form id="track-form">
                 <input
                     class="input-area"
                     type="email"
                     id="email"
-                    placeholder="Email"
+                    placeholder="Time Started"
                     required
                 />
                 <input
                     class="input-area"
                     type="password"
                     id="password"
-                    placeholder="Password"
+                    placeholder="Activity"
                     onkeyup="check_pass();"
                     required
                 />
@@ -39,12 +44,12 @@
                     class="input-area"
                     type="password"
                     id="confirm-password"
-                    placeholder="Confirm Password"
+                    placeholder="Override Duration (Minutes)"
                     onkeyup="check_pass();"
                     required
                 />
                 <div class="button-container">
-                    <button id="submit" type="submit">Signup</button>
+                    <button id="submit" type="submit">Submit</button>
                 </div>
             </form>
         </div>

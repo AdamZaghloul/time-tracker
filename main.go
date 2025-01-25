@@ -78,8 +78,9 @@ func main() {
 
 	mux.Handle("POST /api/users", http.HandlerFunc(cfg.handlerUserCreate))
 	mux.Handle("POST /api/login", http.HandlerFunc(cfg.handlerLogin))
-	mux.Handle("POST /api/refresh", http.HandlerFunc(cfg.RefreshHandler))
-	mux.Handle("POST /api/revoke", http.HandlerFunc(cfg.RevokeHandler))
+	//TODO
+	//mux.Handle("POST /api/refresh", http.HandlerFunc(cfg.RefreshHandler))
+	//mux.Handle("POST /api/revoke", http.HandlerFunc(cfg.RevokeHandler))
 
 	log.Printf("Serving on: http://localhost:%s\n", port)
 	log.Fatal(srv.ListenAndServe())

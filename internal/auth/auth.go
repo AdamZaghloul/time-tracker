@@ -101,3 +101,7 @@ func GetBearerToken(headers http.Header) (string, error) {
 
 	return splitAuth[1], nil
 }
+
+//TODO: add handler_refresh.go and funcionality for refresh and revoke tokens on front end and backend.
+//1. Refreshtoken stored in httpOnly cookie; jwt stored in variable, not local storage. Before each API call, check expiry of reset token. If expired, refresh and make call, if not, make call.
+//2. On logout, revoke token

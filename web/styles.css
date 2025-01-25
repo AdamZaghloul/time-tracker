@@ -18,6 +18,11 @@ body {
     line-height: 1.6;
 }
 
+.content{
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
 .nav-bar {
     display: flex;
     justify-content: space-between;
@@ -47,6 +52,37 @@ body {
 .nav-bar button:hover {
     background-color: var(--button-hover);
 }
+
+.nav-bar ul {
+    width:33%;
+    float:left;
+    list-style-type: none;
+    background-color: var(--bg-color);
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+  }
+  
+  .nav-bar a {
+    color: var(--subtle-color);
+    text-decoration: none;
+    padding: 15px;
+    display: block;
+    text-align: center;
+  }
+  
+  .nav-bar a:hover {
+    background-color: var(--button-bg-disabled);
+  } 
+
+  .nav-bar li{
+    float:left;
+    width: 33%
+  }
+
+  .selected {
+    background-color: var(--button-bg-disabled);
+  } 
 
 h1 {
     color: var(--primary-color);
