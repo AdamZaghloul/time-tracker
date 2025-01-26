@@ -35,6 +35,7 @@
                     id="start_time"
                     placeholder="Time Started"
                     required
+                    onkeyup="storeProgress(`start_time`);"
                 /><br>
                 <label class="standard-label" for="activity">Activity:</label>
                 <input
@@ -43,6 +44,7 @@
                     id="activity"
                     placeholder="Activity"
                     required
+                    onkeyup="storeProgress(`activity`);"
                 /><br>
                 <label for="override_duration">Override Duration (Minutes):</label>
                 <input
@@ -50,6 +52,7 @@
                     type="number"
                     id="override_duration"
                     placeholder="Override Duration (Minutes)"
+                    onkeyup="storeProgress(`override_duration`);"
                 /><br>
                 <div class="button-container">
                     <button id="submit" type="submit">Submit</button>

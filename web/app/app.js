@@ -5,7 +5,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.location='/';
     }
 
-    resetTrackForm();
+    const startTime = localStorage.getItem("start_time");
+    const activity = localStorage.getItem("activity");
+    const overrideDuration = localStorage.getItem("override_duration");
+
+    if(!startTime || (startTime && !activity && !overrideDuration)){
+        resetTrackForm();
+    }else{
+        document.getElementById("start_time").value = startTime;
+        document.getElementById("activity").value = activity;
+        document.getElementById("override_duration").value = overrideDuration;
+    }
 });
 
 document
@@ -53,7 +63,11 @@ async function submitActivity() {
     }
   }
 
-  function resetTrackForm(activity){
+function resetTrackForm(activity){
+    localStorage.removeItem("start_time");
+    localStorage.removeItem("activity");
+    localStorage.removeItem("override_duration");
+
     let date = new Date();
     let hour = date.getHours();
     let hourText = "";
@@ -72,7 +86,6 @@ async function submitActivity() {
     }
 
     document.getElementById("start_time").value = `${hourText}:${minText}`;
-
     document.getElementById("activity").value = "";
     document.getElementById("override_duration").value = "";
 
@@ -88,4 +101,9 @@ async function submitActivity() {
     }
 
     document.getElementById("activity").focus();
-  }
+}
+
+function storeProgress(key){
+    localStorage.setItem("start_time", document.getElementById("start_time").value);
+    localStorage.setItem(key, document.getElementById(key).value);
+}
