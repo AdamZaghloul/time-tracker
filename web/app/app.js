@@ -107,3 +107,20 @@ function storeProgress(key){
     localStorage.setItem("start_time", document.getElementById("start_time").value);
     localStorage.setItem(key, document.getElementById(key).value);
 }
+
+function navTrack(){
+    document.getElementById("track-section").style.display = "block";
+    document.getElementById("log-section").style.display = "none";
+
+    document.getElementById("track-link").classList.add("selected");
+    document.getElementById("log-link").classList.remove("selected");
+   
+}
+
+async function navLog(){
+    document.getElementById("track-section").style.display = "none";
+    document.getElementById("log-section").style.display = "block";
+
+    document.getElementById("track-link").classList.remove("selected");
+    document.getElementById("log-link").classList.add("selected");
+}

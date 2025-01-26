@@ -55,7 +55,7 @@ body {
 }
 
 .nav-bar ul {
-    width:33%;
+    width:50%;
     float:left;
     list-style-type: none;
     background-color: var(--bg-color);
@@ -78,7 +78,7 @@ body {
 
   .nav-bar li{
     float:left;
-    width: 33%
+    width: 25%
   }
 
   .selected {

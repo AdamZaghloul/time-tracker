@@ -15,14 +15,15 @@
                 <span class="subtitle">Know your time.</span>
             </h1>
             <ul>
-                <li><a href="#" class="selected">Track</a></li>
-                <li><a href="#">Log</a></li>
-                <li><a href="#">Dashboard</a></li>
+                <li><a id="track-link" href="javascript:void(0);" onclick="navTrack();" class="selected">Track</a></li>
+                <li><a id="log-link" href="javascript:void(0);" onclick="navLog();">Log</a></li>
+                <li><a id="report-link" href="#">Report</a></li>
+                <li><a id="settings-link" href="#">Settings</a></li>
             </ul>
             <button onclick="logout();" type="button">Logout</button>
         </div>
 
-        <div id="track-section" class="content">
+        <div id="track-section" class="content" style="display: block">
             <h2>
                 Track Time
                 <span id="submit-message" class="submit-subtitle"></span>
@@ -58,6 +59,21 @@
                     <button id="submit" type="submit">Submit</button>
                 </div>
             </form>
+        </div>
+
+        <div id="log-section" style="display: none">
+            <table style="width:100%">
+                <tr>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration</th>
+                    <th>Override Duration</th>
+                    <th>Activity</th>
+                    <th>Category</th>
+                    <th>Project</th>
+                </tr>
+            </table>
         </div>
     </body>
 </html>
