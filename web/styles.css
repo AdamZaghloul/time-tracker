@@ -136,51 +136,8 @@ button[disabled=true], button:disabled{
     gap: 10px;
 }
 
-#video-display {
-    border-top: 2px solid #333;
-    padding-top: 20px;
-    margin-top: 20px;
-}
-
-#video-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 10px;
-}
-
-#video-list li {
-    padding: 10px;
-    margin-top: 5px;
-    background-color: #1e1e1e;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-#video-list .active {
-    background-color: var(--primary-color);
-    color: #000;
-}
-
-#video-list li:hover {
-    background-color: #333;
-}
-
-#thumbnail-image,
-#video-player {
-    max-width: 300px;
-    margin-left: 10px;
-    vertical-align: middle;
-}
-
 #auth-section {
     max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-#video-section {
-    max-width: 1080px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -192,29 +149,8 @@ form {
     gap: 10px; /* Space between form elements */
 }
 
-#video-upload-forms {
-    display: flex;
-    gap: 20px; /* Space between the two forms */
-}
-
-#thumbnail-upload-form,
-#video-container {
-    background-color: #1a1a1a;
-    padding: 20px;
-    border-radius: 5px;
-    flex: 1;
-}
-
-#download-button,
-#video-player {
-    margin-top: 0.5rem;
-    width: 100%;
-}
-
-#video-upload-forms form {
-    flex: 1;
-}
-
-.mb-4 {
-    margin-bottom: 16px;
-}
+label {
+    color: var(--subtle-color);
+    text-decoration: none;
+    display: block;
+  }

@@ -25,29 +25,29 @@
         <div id="track-section" class="content">
             <h2>Track Time</h2>
             <form id="track-form">
+                <label for="start_time">Start Time:</label>
                 <input
                     class="input-area"
-                    type="email"
-                    id="email"
+                    type="time"
+                    id="start_time"
                     placeholder="Time Started"
                     required
-                />
+                /><br>
+                <label class="standard-label" for="activity">Activity:</label>
                 <input
                     class="input-area"
-                    type="password"
-                    id="password"
+                    type="text"
+                    id="activity"
                     placeholder="Activity"
-                    onkeyup="check_pass();"
                     required
-                />
+                /><br>
+                <label for="override_duration">Override Duration (Minutes):</label>
                 <input
                     class="input-area"
-                    type="password"
-                    id="confirm-password"
+                    type="number"
+                    id="override_duration"
                     placeholder="Override Duration (Minutes)"
-                    onkeyup="check_pass();"
-                    required
-                />
+                /><br>
                 <div class="button-container">
                     <button id="submit" type="submit">Submit</button>
                 </div>

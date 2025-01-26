@@ -11,6 +11,35 @@ import (
 	"github.com/google/uuid"
 )
 
+type Activity struct {
+	ID               uuid.UUID
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	Activity         string
+	StartTime        time.Time
+	EndTime          time.Time
+	OverrideDuration sql.NullInt32
+	UserID           uuid.UUID
+	ProjectID        uuid.NullUUID
+	CategoryID       uuid.NullUUID
+}
+
+type Category struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Category  string
+	UserID    uuid.UUID
+}
+
+type Project struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Project   string
+	UserID    uuid.UUID
+}
+
 type RefreshToken struct {
 	Token     string
 	CreatedAt time.Time
