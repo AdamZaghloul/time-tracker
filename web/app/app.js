@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!token){
         window.location='/';
     }
+
+    resetTrackForm();
 });
 
 document
@@ -28,9 +30,6 @@ async function submitActivity() {
     
     let endTime = new Date();
     endTime = new Date(endTime.getTime() - (endTime.getTimezoneOffset() * 60000));
-
-    alert(`Start: ${startTime} End: ${endTime}`);
-    alert(`Start: ${JSON.stringify({ startTime, activity, overrideDuration, endTime })}`);
   
     try {
       const res = await fetch("/api/activities", {
@@ -45,6 +44,8 @@ async function submitActivity() {
       if (!res.ok) {
         throw new Error(`Failed to create activity: ${data.error}`);
       }
+      
+      resetTrackForm(data.Activity);
 
       console.log("Activity logged!")
     } catch (error) {
@@ -52,12 +53,39 @@ async function submitActivity() {
     }
   }
 
-function ISODateString(d){
-    function pad(n){return n<10 ? '0'+n : n}
-    return d.getUTCFullYear()+'-'
-        + pad(d.getUTCMonth()+1)+'-'
-        + pad(d.getUTCDate())+'T'
-        + pad(d.getUTCHours())+':'
-        + pad(d.getUTCMinutes())+':'
-        + pad(d.getUTCSeconds())+'Z'
-}
+  function resetTrackForm(activity){
+    let date = new Date();
+    let hour = date.getHours();
+    let hourText = "";
+    if(hour < 10){
+        hourText = "0" + hour;
+    }else{
+        hourText = hour;
+    }
+
+    let min = date.getMinutes();
+    let minText = "";
+    if(min < 10){
+        minText = "0" + min;
+    }else{
+        minText = min;
+    }
+
+    document.getElementById("start_time").value = `${hourText}:${minText}`;
+
+    document.getElementById("activity").value = "";
+    document.getElementById("override_duration").value = "";
+
+    let message = document.getElementById("submit-message");
+
+    if (activity){
+        message.textContent = `Activity Logged: ${activity}`;
+        setTimeout(() => {
+            message.textContent = "";
+        }, 5000);
+    }else{
+        message.textContent = "";
+    }
+
+    document.getElementById("activity").focus();
+  }

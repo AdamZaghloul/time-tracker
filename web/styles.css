@@ -2,6 +2,7 @@
     --bg-color: #1e1e1e;
     --fg-color: #f5f5f5;
     --subtle-color: #888;
+    --submit-message-color: #257a4d;
     --primary-color: #2ca9bc;
     --input-bg: #2a2a2a;
     --input-border: #444;
@@ -92,6 +93,13 @@ h1 {
 
 .subtitle {
     color: var(--subtle-color);
+    font-size: 0.5em;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.submit-subtitle {
+    color: var(--submit-message-color);
     font-size: 0.5em;
     margin-left: 10px;
     margin-top: 10px;
