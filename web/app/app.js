@@ -145,8 +145,30 @@ async function refreshLog(){
       } catch (error) {
         alert(`Error: ${error.message}`);
       }
-    
+      
+      const table = document.getElementById("logTableBody");
+
       for (const activity of data){
-        alert(activity.Activity);
+        let row = table.insertRow();
+
+        let date = row.insertCell(0);
+        date.innerHTML = activity.Date.split('T')[0];
+
+        let startTime = row.insertCell(1);
+        startTime.innerHTML = activity.StartTime.split('T')[1].split('Z')[0];
+
+        let endTime = row.insertCell(2);
+        endTime.innerHTML = activity.EndTime.split('T')[1].split('Z')[0].split('.')[0];
+
+        let duration = row.insertCell(3);
+        duration.innerHTML = activity.Duration;
+
+        let overrideDuration = row.insertCell(4);
+        if (activity.OverrideDuration.Valid){
+            overrideDuration.innerHTML = activity.OverrideDuration.Int32;
+        }
+
+        let activityRow = row.insertCell(5);
+        activityRow.innerHTML = activity.Activity;
       }
 }
