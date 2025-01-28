@@ -123,4 +123,30 @@ async function navLog(){
 
     document.getElementById("track-link").classList.remove("selected");
     document.getElementById("log-link").classList.add("selected");
+
+    refreshLog();
+}
+
+async function refreshLog(){
+    var data;
+
+    try {
+        const res = await fetch("/api/activities", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        data = await res.json();
+        if (!res.ok) {
+          throw new Error(`Failed to get activities: ${data.error}`);
+        }
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
+    
+      for (const activity of data){
+        alert(activity.Activity);
+      }
 }

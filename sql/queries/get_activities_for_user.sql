@@ -1,0 +1,2 @@
+-- name: GetActivitiesForUser :many
+SELECT id, DATE(start_time) AS "date", start_time, end_time, ROUND(EXTRACT(EPOCH FROM (end_time - start_time))/60) AS "duration", override_duration, activity FROM activities WHERE user_id = $1 ORDER BY start_time DESC;

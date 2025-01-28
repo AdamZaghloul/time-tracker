@@ -83,6 +83,7 @@ func main() {
 	//mux.Handle("POST /api/revoke", http.HandlerFunc(cfg.RevokeHandler))
 
 	mux.Handle("POST /api/activities", http.HandlerFunc(cfg.handlerCreateActivity))
+	mux.Handle("GET /api/activities", http.HandlerFunc(cfg.handlerGetActivities))
 
 	log.Printf("Serving on: http://localhost:%s\n", port)
 	log.Fatal(srv.ListenAndServe())

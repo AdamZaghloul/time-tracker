@@ -19,11 +19,17 @@ body {
     line-height: 1.6;
 }
 
-.content{
+.track-content{
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
 }
+
+.log-content{
+    margin: 0 auto;
+    padding: 20px;
+}
+
 .nav-bar {
     display: flex;
     justify-content: space-between;

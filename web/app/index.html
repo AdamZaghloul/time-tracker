@@ -23,7 +23,7 @@
             <button onclick="logout();" type="button">Logout</button>
         </div>
 
-        <div id="track-section" class="content" style="display: block">
+        <div id="track-section" class="track-content" style="display: block">
             <h2>
                 Track Time
                 <span id="submit-message" class="submit-subtitle"></span>
@@ -37,6 +37,7 @@
                     placeholder="Time Started"
                     required
                     onkeyup="storeProgress(`start_time`);"
+                    onfocusout="storeProgress(`start_time`);"
                 /><br>
                 <label class="standard-label" for="activity">Activity:</label>
                 <input
@@ -61,7 +62,7 @@
             </form>
         </div>
 
-        <div id="log-section" style="display: none">
+        <div id="log-section" class="log-content" style="display: none">
             <table style="width:100%">
                 <tr>
                     <th>Date</th>

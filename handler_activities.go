@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -42,7 +41,6 @@ func (cfg *apiConfig) handlerCreateActivity(w http.ResponseWriter, r *http.Reque
 		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters.", err)
 		return
 	}
-	fmt.Println(params)
 
 	//TODO: Add auto project and category assignment
 
@@ -78,4 +76,27 @@ func (cfg *apiConfig) handlerCreateActivity(w http.ResponseWriter, r *http.Reque
 	respondWithJSON(w, http.StatusOK, response{
 		activity,
 	})
+}
+
+func (cfg *apiConfig) handlerGetActivities(w http.ResponseWriter, r *http.Request) {
+
+	token, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't find JWT", err)
+		return
+	}
+
+	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't validate JWT", err)
+		return
+	}
+
+	activities, err := cfg.db.GetActivitiesForUser(r.Context(), userID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't get activities for user.", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, activities)
 }
