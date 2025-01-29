@@ -33,12 +33,16 @@ function logout() {
 async function submitActivity() {
     const startArray = document.getElementById("start_time").value.split(":");
     let startTime = new Date(new Date().setHours(startArray[0], startArray[1], 0, 0));
-    startTime = new Date(startTime.getTime() - (startTime.getTimezoneOffset() * 60000));
 
     const activity = document.getElementById("activity").value;
     const overrideDuration = document.getElementById("override_duration").value;
     
     let endTime = new Date();
+    if(overrideDuration){
+        endTime = new Date(startTime.getTime() + (overrideDuration * 60000));
+    }
+
+    startTime = new Date(startTime.getTime() - (startTime.getTimezoneOffset() * 60000));
     endTime = new Date(endTime.getTime() - (endTime.getTimezoneOffset() * 60000));
   
     try {
@@ -48,14 +52,14 @@ async function submitActivity() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ startTime, activity, overrideDuration, endTime }),
+        body: JSON.stringify({ startTime, activity, endTime }),
       });
       const data = await res.json();
       if (!res.ok) {
         throw new Error(`Failed to create activity: ${data.error}`);
       }
       
-      resetTrackForm(data.Activity);
+      resetTrackForm(data.Activity, endTime);
 
       console.log("Activity logged!")
     } catch (error) {
@@ -63,12 +67,17 @@ async function submitActivity() {
     }
   }
 
-function resetTrackForm(activity){
+function resetTrackForm(activity, endTime){
     localStorage.removeItem("start_time");
     localStorage.removeItem("activity");
     localStorage.removeItem("override_duration");
 
     let date = new Date();
+    if(endTime){
+        date = new Date(endTime)
+        date = new Date(date.getTime() + (date.getTimezoneOffset() * 60000));
+    }
+
     let hour = date.getHours();
     let hourText = "";
     if(hour < 10){
@@ -154,21 +163,16 @@ async function refreshLog(){
         let date = row.insertCell(0);
         date.innerHTML = activity.Date.split('T')[0];
 
-        let startTime = row.insertCell(1);
-        startTime.innerHTML = activity.StartTime.split('T')[1].split('Z')[0];
+        let activityRow = row.insertCell(1);
+        activityRow.innerHTML = activity.Activity;
 
-        let endTime = row.insertCell(2);
-        endTime.innerHTML = activity.EndTime.split('T')[1].split('Z')[0].split('.')[0];
-
-        let duration = row.insertCell(3);
+        let duration = row.insertCell(2);
         duration.innerHTML = activity.Duration;
 
-        let overrideDuration = row.insertCell(4);
-        if (activity.OverrideDuration.Valid){
-            overrideDuration.innerHTML = activity.OverrideDuration.Int32;
-        }
+        let startTime = row.insertCell(3);
+        startTime.innerHTML = activity.StartTime.split('T')[1].split('Z')[0];
 
-        let activityRow = row.insertCell(5);
-        activityRow.innerHTML = activity.Activity;
+        let endTime = row.insertCell(4);
+        endTime.innerHTML = activity.EndTime.split('T')[1].split('Z')[0].split('.')[0];
       }
 }

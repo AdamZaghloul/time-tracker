@@ -61,11 +61,10 @@ func (cfg *apiConfig) handlerCreateActivity(w http.ResponseWriter, r *http.Reque
 	}
 
 	activity, err := cfg.db.CreateActivity(r.Context(), database.CreateActivityParams{
-		StartTime:        params.StartTime,
-		Activity:         params.Activity,
-		OverrideDuration: preparedOverrideDuration,
-		EndTime:          params.EndTime,
-		UserID:           userID,
+		StartTime: params.StartTime,
+		Activity:  params.Activity,
+		EndTime:   params.EndTime,
+		UserID:    userID,
 	})
 
 	if err != nil {

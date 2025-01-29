@@ -1,6 +1,9 @@
 :root {
     --bg-color: #1e1e1e;
-    --fg-color: #f5f5f5;
+    --table-alt-bg-color: #444444;
+    --table-hover-color: #ddd;
+    --fg-color-old: #f5f5f5;
+    --fg-color: #888;
     --subtle-color: #888;
     --submit-message-color: #257a4d;
     --primary-color: #2ca9bc;
@@ -167,4 +170,25 @@ label {
     color: var(--subtle-color);
     text-decoration: none;
     display: block;
-  }
+}
+
+tr:nth-child(even) {
+    background-color: var(--table-alt-bg-color);
+}
+
+table {
+    border-collapse:collapse 
+}
+
+td{
+    text-align: left;
+}
+
+th{
+    color: var(--primary-color);
+    text-align: left;
+}
+
+/*tbody tr:hover {
+    background-color: var(--table-hover-color);
+}*/

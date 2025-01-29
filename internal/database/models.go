@@ -12,16 +12,15 @@ import (
 )
 
 type Activity struct {
-	ID               uuid.UUID
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	Activity         string
-	StartTime        time.Time
-	EndTime          time.Time
-	OverrideDuration sql.NullInt32
-	UserID           uuid.UUID
-	ProjectID        uuid.NullUUID
-	CategoryID       uuid.NullUUID
+	ID         uuid.UUID
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	Activity   string
+	StartTime  time.Time
+	EndTime    time.Time
+	UserID     uuid.UUID
+	ProjectID  uuid.NullUUID
+	CategoryID uuid.NullUUID
 }
 
 type Category struct {

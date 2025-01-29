@@ -7,24 +7,22 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 const getActivitiesForUser = `-- name: GetActivitiesForUser :many
-SELECT id, DATE(start_time) AS "date", start_time, end_time, ROUND(EXTRACT(EPOCH FROM (end_time - start_time))/60) AS "duration", override_duration, activity FROM activities WHERE user_id = $1 ORDER BY start_time DESC
+SELECT id, DATE(start_time) AS "date", start_time, end_time, ROUND(EXTRACT(EPOCH FROM (end_time - start_time))/60) AS "duration", activity FROM activities WHERE user_id = $1 ORDER BY start_time DESC
 `
 
 type GetActivitiesForUserRow struct {
-	ID               uuid.UUID
-	Date             time.Time
-	StartTime        time.Time
-	EndTime          time.Time
-	Duration         float64
-	OverrideDuration sql.NullInt32
-	Activity         string
+	ID        uuid.UUID
+	Date      time.Time
+	StartTime time.Time
+	EndTime   time.Time
+	Duration  float64
+	Activity  string
 }
 
 func (q *Queries) GetActivitiesForUser(ctx context.Context, userID uuid.UUID) ([]GetActivitiesForUserRow, error) {
@@ -42,7 +40,6 @@ func (q *Queries) GetActivitiesForUser(ctx context.Context, userID uuid.UUID) ([
 			&i.StartTime,
 			&i.EndTime,
 			&i.Duration,
-			&i.OverrideDuration,
 			&i.Activity,
 		); err != nil {
 			return nil, err

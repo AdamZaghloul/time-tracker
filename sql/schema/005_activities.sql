@@ -6,7 +6,6 @@ CREATE TABLE activities(
     activity TEXT NOT NULL,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
-    override_duration INTEGER,
     user_id UUID NOT NULL,
     FOREIGN KEY (user_id)
     REFERENCES users(id) ON DELETE CASCADE,

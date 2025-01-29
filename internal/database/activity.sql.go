@@ -7,14 +7,13 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 const createActivity = `-- name: CreateActivity :one
-INSERT INTO activities (id, created_at, updated_at, start_time, activity, override_duration, end_time, user_id)
+INSERT INTO activities (id, created_at, updated_at, start_time, activity, end_time, user_id)
 VALUES (
     gen_random_uuid (),
     NOW(),
@@ -22,25 +21,22 @@ VALUES (
     $1,
     $2,
     $3,
-    $4,
-    $5
+    $4
 )
-RETURNING id, created_at, updated_at, activity, start_time, end_time, override_duration, user_id, project_id, category_id
+RETURNING id, created_at, updated_at, activity, start_time, end_time, user_id, project_id, category_id
 `
 
 type CreateActivityParams struct {
-	StartTime        time.Time
-	Activity         string
-	OverrideDuration sql.NullInt32
-	EndTime          time.Time
-	UserID           uuid.UUID
+	StartTime time.Time
+	Activity  string
+	EndTime   time.Time
+	UserID    uuid.UUID
 }
 
 func (q *Queries) CreateActivity(ctx context.Context, arg CreateActivityParams) (Activity, error) {
 	row := q.db.QueryRowContext(ctx, createActivity,
 		arg.StartTime,
 		arg.Activity,
-		arg.OverrideDuration,
 		arg.EndTime,
 		arg.UserID,
 	)
@@ -52,7 +48,6 @@ func (q *Queries) CreateActivity(ctx context.Context, arg CreateActivityParams) 
 		&i.Activity,
 		&i.StartTime,
 		&i.EndTime,
-		&i.OverrideDuration,
 		&i.UserID,
 		&i.ProjectID,
 		&i.CategoryID,
