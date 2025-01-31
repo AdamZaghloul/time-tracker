@@ -14,13 +14,13 @@ import (
 
 const updateActivity = `-- name: UpdateActivity :one
 UPDATE activities SET
-    activity = $1,
-    start_time = $2,
-    end_time = $3,
+    activity = CASE WHEN $1 IS NULL THEN activity ELSE $1 END,
+    start_time = CASE WHEN $2 IS NULL THEN start_time ELSE $2 END,
+    end_time = CASE WHEN $3 IS NULL THEN end_time ELSE $3 END,
     updated_at = NOW(),
-    project_id = $4,
-    category_id = $5
-WHERE id = $6
+    project_id = CASE WHEN $4 IS NULL THEN project_id ELSE $4 END,
+    category_id = CASE WHEN $5 IS NULL THEN category_id ELSE $5 END
+WHERE id = $6 AND user_id = $7
 RETURNING id, created_at, updated_at, activity, start_time, end_time, user_id, project_id, category_id
 `
 
@@ -31,6 +31,7 @@ type UpdateActivityParams struct {
 	ProjectID  uuid.NullUUID
 	CategoryID uuid.NullUUID
 	ID         uuid.UUID
+	UserID     uuid.UUID
 }
 
 func (q *Queries) UpdateActivity(ctx context.Context, arg UpdateActivityParams) (Activity, error) {
@@ -41,6 +42,7 @@ func (q *Queries) UpdateActivity(ctx context.Context, arg UpdateActivityParams) 
 		arg.ProjectID,
 		arg.CategoryID,
 		arg.ID,
+		arg.UserID,
 	)
 	var i Activity
 	err := row.Scan(

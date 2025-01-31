@@ -84,6 +84,7 @@ func main() {
 
 	mux.Handle("POST /api/activities", http.HandlerFunc(cfg.handlerCreateActivity))
 	mux.Handle("GET /api/activities", http.HandlerFunc(cfg.handlerGetActivities))
+	mux.Handle("PUT /api/activities", http.HandlerFunc(cfg.handlerUpdateActivity))
 
 	log.Printf("Serving on: http://localhost:%s\n", port)
 	log.Fatal(srv.ListenAndServe())
