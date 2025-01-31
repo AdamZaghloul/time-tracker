@@ -1,3 +1,6 @@
+let editableRow = null;
+let editableCell = null;
+
 document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
 
@@ -24,6 +27,14 @@ document
     event.preventDefault();
     await submitActivity();
   });
+
+document.addEventListener("click",function(event){
+    if(editableCell && editableCell != event.target && editableCell != event.target.parentNode){
+        makeCellUneditable(editableCell);
+        editableCell = null;
+        return;
+    }
+});
 
 function logout() {
     localStorage.removeItem("token");
@@ -162,17 +173,65 @@ async function refreshLog(){
 
         let date = row.insertCell(0);
         date.innerHTML = activity.Date.split('T')[0];
+        date.classList.add("edit");
 
         let activityRow = row.insertCell(1);
         activityRow.innerHTML = activity.Activity;
+        activityRow.classList.add("edit");
 
         let duration = row.insertCell(2);
         duration.innerHTML = activity.Duration;
 
         let startTime = row.insertCell(3);
         startTime.innerHTML = activity.StartTime.split('T')[1].split('Z')[0];
+        startTime.classList.add("edit");
 
         let endTime = row.insertCell(4);
         endTime.innerHTML = activity.EndTime.split('T')[1].split('Z')[0].split('.')[0];
+        endTime.classList.add("edit");
       }
+
+      enableEdit();
+}
+
+async function enableEdit(){
+    let editableCells = document.querySelectorAll(".edit");
+
+    editableCells.forEach(function(cell){
+        cell.addEventListener("click",function(){
+            if(editableCell) {
+                if(cell != editableCell){
+                    makeCellUneditable(editableCell);
+                }
+            }else{
+            
+                var input = document.createElement('input');
+                input.setAttribute('type','text');
+                input.setAttribute('id','input-edit');
+                input.value = cell.innerHTML;
+                //input.style.width = cell.offsetWidth - (cell.clientLeft * 2) + "px";
+                //input.style.height = cell.offsetHeight - (cell.clientTop * 2) + "px";
+                
+                cell.innerHTML = '';
+                cell.append(input);
+                cell.firstElementChild.select();
+                
+                editableCell = cell;
+
+                input.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                      makeCellUneditable(editableCell);
+                    }
+                });
+            }
+        });
+      });
+}
+
+function makeCellUneditable(cell) {
+    input = document.getElementById("input-edit");
+    cell.innerHTML = input.value;
+    input.remove();
+
+    editableCell = null;
 }
