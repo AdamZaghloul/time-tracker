@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -91,9 +92,6 @@ func (cfg *apiConfig) handlerUpdateActivity(w http.ResponseWriter, r *http.Reque
 		CategoryID uuid.UUID `json:"category"`
 		ProjectID  uuid.UUID `json:"project"`
 	}
-	type response struct {
-		database.Activity
-	}
 
 	token, err := auth.GetBearerToken(r.Header)
 	if err != nil {
@@ -132,6 +130,8 @@ func (cfg *apiConfig) handlerUpdateActivity(w http.ResponseWriter, r *http.Reque
 		preparedCategoryId.UUID = params.CategoryID
 	}
 
+	fmt.Println(params)
+
 	activity, err := cfg.db.UpdateActivity(r.Context(), database.UpdateActivityParams{
 		ID:         params.ID,
 		StartTime:  params.StartTime,
@@ -147,7 +147,5 @@ func (cfg *apiConfig) handlerUpdateActivity(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, response{
-		activity,
-	})
+	respondWithJSON(w, http.StatusOK, activity)
 }

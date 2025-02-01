@@ -235,12 +235,16 @@ async function enableEdit(){
       });
 }
 
-function makeCellUneditable(cell) {
+async function makeCellUneditable(cell) {
     input = document.getElementById("input-edit");
     val = input.value;
     let startTime = null;
     let endTime = null;
     let activity = null;
+    let category = null;
+    let project = null;
+    let data = null;
+    let id = cell.parentNode.getAttribute("id");
 
     if(cell.getAttribute('type') == 'date'){
         var dateArray = val.split("-");
@@ -286,10 +290,30 @@ function makeCellUneditable(cell) {
         return;
     }
     
-    //next: make api call and upgrade with callback.
+    try {
+        const res = await fetch("/api/activities", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ id, startTime, activity, endTime, category, project }),
+        });
+        data = await res.json();
+        if (!res.ok) {
+          throw new Error(`Failed to update activity: ${data.error}`);
+        }
+    } catch (error) {
+        alert(`Error: ${error.message}`);
+    }
     
+    cell.parentNode.innerHTML = null;
     cell.innerHTML = input.value;
     input.remove();
 
     editableCell = null;
+}
+
+function updateRow(row, activity){
+
 }
