@@ -170,14 +170,17 @@ async function refreshLog(){
 
       for (const activity of data){
         let row = table.insertRow();
+        row.setAttribute('id', activity.ID);
 
         let date = row.insertCell(0);
         date.innerHTML = activity.Date.split('T')[0];
         date.classList.add("edit");
+        date.setAttribute('type', 'date');
 
         let activityRow = row.insertCell(1);
         activityRow.innerHTML = activity.Activity;
         activityRow.classList.add("edit");
+        activityRow.setAttribute('type', 'text');
 
         let duration = row.insertCell(2);
         duration.innerHTML = activity.Duration;
@@ -185,10 +188,14 @@ async function refreshLog(){
         let startTime = row.insertCell(3);
         startTime.innerHTML = activity.StartTime.split('T')[1].split('Z')[0];
         startTime.classList.add("edit");
+        startTime.setAttribute('type', 'time');
+        startTime.setAttribute('time-type', 'start');
 
         let endTime = row.insertCell(4);
         endTime.innerHTML = activity.EndTime.split('T')[1].split('Z')[0].split('.')[0];
         endTime.classList.add("edit");
+        endTime.setAttribute('type', 'time');
+        endTime.setAttribute('time-type', 'end');
       }
 
       enableEdit();
@@ -206,7 +213,7 @@ async function enableEdit(){
             }else{
             
                 var input = document.createElement('input');
-                input.setAttribute('type','text');
+                input.setAttribute('type',cell.getAttribute('type'));
                 input.setAttribute('id','input-edit');
                 input.value = cell.innerHTML;
                 //input.style.width = cell.offsetWidth - (cell.clientLeft * 2) + "px";
@@ -230,6 +237,57 @@ async function enableEdit(){
 
 function makeCellUneditable(cell) {
     input = document.getElementById("input-edit");
+    val = input.value;
+    let startTime = null;
+    let endTime = null;
+    let activity = null;
+
+    if(cell.getAttribute('type') == 'date'){
+        var dateArray = val.split("-");
+        var year = dateArray[0];
+        var month = parseInt(dateArray[1], 10) - 1;
+        var date = dateArray[2];
+        var baseDate = new Date(year, month, date);
+
+        const startArray = cell.parentNode.querySelector('[time-type="start"]').innerHTML.split(":");
+        startTime = new Date(new Date(baseDate.getTime()).setHours(startArray[0], startArray[1], 0, 0));
+
+        const endArray = cell.parentNode.querySelector('[time-type="end"]').innerHTML.split(":");
+        endTime = new Date(new Date(baseDate.getTime()).setHours(endArray[0], endArray[1], 0, 0));
+
+        startTime = new Date(startTime.getTime() - (startTime.getTimezoneOffset() * 60000));
+        endTime = new Date(endTime.getTime() - (endTime.getTimezoneOffset() * 60000));
+
+    }else if(cell.getAttribute('type') == 'text'){
+        activity = val;
+        alert(activity);
+    }else if (cell.getAttribute('type') == 'time'){
+        var dateArray = cell.parentNode.querySelector('[type="date"]').innerHTML.split("-");
+        var year = dateArray[0];
+        var month = parseInt(dateArray[1], 10) - 1;
+        var date = dateArray[2];
+        var baseDate = new Date(year, month, date);
+
+        const newTimeArray = val.split(":");
+        let newTime = new Date(new Date(baseDate.getTime()).setHours(newTimeArray[0], newTimeArray[1], 0, 0));
+
+        if(cell.getAttribute('time-type') == 'start'){
+            startTime = new Date(newTime.getTime() - (newTime.getTimezoneOffset() * 60000));
+            alert(startTime);
+        }else if (cell.getAttribute('time-type') == 'end'){
+            endTime = new Date(newTime.getTime() - (newTime.getTimezoneOffset() * 60000));
+            alert(endTime);
+        }else{
+            alert("Invalid time cell being updated.");
+            return;
+        }
+    }else{
+        alert("Invalid cell being updated.");
+        return;
+    }
+    
+    //next: make api call and upgrade with callback.
+    
     cell.innerHTML = input.value;
     input.remove();
 
