@@ -7,22 +7,27 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 const getActivitiesForUser = `-- name: GetActivitiesForUser :many
-SELECT id, DATE(start_time) AS "date", start_time, end_time, ROUND(EXTRACT(EPOCH FROM (end_time - start_time))/60) AS "duration", activity FROM activities WHERE user_id = $1 ORDER BY start_time DESC
+SELECT a.id, DATE(a.start_time) AS "date", a.start_time, a.end_time, ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time))/60) AS "duration", a.activity, a.project_id, a.category_id, p.project, c.category FROM activities a LEFT JOIN projects p ON a.project_id::UUID = p.id::UUID LEFT JOIN categories c ON a.category_id::UUID = c.category::UUID WHERE a.user_id = $1 ORDER BY a.start_time DESC
 `
 
 type GetActivitiesForUserRow struct {
-	ID        uuid.UUID
-	Date      time.Time
-	StartTime time.Time
-	EndTime   time.Time
-	Duration  float64
-	Activity  string
+	ID         uuid.UUID
+	Date       time.Time
+	StartTime  time.Time
+	EndTime    time.Time
+	Duration   float64
+	Activity   string
+	ProjectID  uuid.NullUUID
+	CategoryID uuid.NullUUID
+	Project    sql.NullString
+	Category   sql.NullString
 }
 
 func (q *Queries) GetActivitiesForUser(ctx context.Context, userID uuid.UUID) ([]GetActivitiesForUserRow, error) {
@@ -41,6 +46,10 @@ func (q *Queries) GetActivitiesForUser(ctx context.Context, userID uuid.UUID) ([
 			&i.EndTime,
 			&i.Duration,
 			&i.Activity,
+			&i.ProjectID,
+			&i.CategoryID,
+			&i.Project,
+			&i.Category,
 		); err != nil {
 			return nil, err
 		}

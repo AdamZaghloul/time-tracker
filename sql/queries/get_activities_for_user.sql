@@ -1,2 +1,2 @@
 -- name: GetActivitiesForUser :many
-SELECT id, DATE(start_time) AS "date", start_time, end_time, ROUND(EXTRACT(EPOCH FROM (end_time - start_time))/60) AS "duration", activity FROM activities WHERE user_id = $1 ORDER BY start_time DESC;
+SELECT a.id, DATE(a.start_time) AS "date", a.start_time, a.end_time, ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time))/60) AS "duration", a.activity, a.project_id, a.category_id, p.project, c.category FROM activities a LEFT JOIN projects p ON a.project_id::UUID = p.id::UUID LEFT JOIN categories c ON a.category_id::UUID = c.category::UUID WHERE a.user_id = $1 ORDER BY a.start_time DESC;

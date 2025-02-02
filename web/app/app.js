@@ -187,8 +187,35 @@ function enableCellEdit(cell){
             }
         }else{
         
-            var input = document.createElement('input');
-            input.setAttribute('type',cell.getAttribute('type'));
+            var input;
+            var type = cell.getAttribute('type');
+
+            if(type == 'select'){
+                input = document.createElement('select');
+                subType = cell.getAttribute('select-type');
+                var array = ["Volvo","Saab","Mercades","Audi"];
+
+                if(subType == 'category'){
+                    for (var i = 0; i < array.length; i++) {
+                        var option = document.createElement("option");
+                        option.value = array[i];
+                        option.text = array[i];
+                        input.appendChild(option);
+                    }
+                }else if(subType == 'project'){
+                    for (var i = 0; i < array.length; i++) {
+                        var option = document.createElement("option");
+                        option.value = array[i];
+                        option.text = array[i];
+                        input.appendChild(option);
+                    }
+                }
+            }else{
+            
+                input = document.createElement('input');
+            }
+    
+            input.setAttribute('type', type);
             input.setAttribute('id','input-edit');
             input.value = cell.innerHTML;
             //input.style.width = cell.offsetWidth - (cell.clientLeft * 2) + "px";
@@ -196,7 +223,7 @@ function enableCellEdit(cell){
             
             cell.innerHTML = '';
             cell.append(input);
-            cell.firstElementChild.select();
+            type != 'select' ? cell.firstElementChild.select(): null;
             
             editableCell = cell;
 
@@ -256,6 +283,9 @@ async function makeCellUneditable(cell) {
             alert("Invalid time cell being updated.");
             return;
         }
+    }else if (cell.getAttribute('type') == 'select'){
+        alert("Category or project");
+        return;
     }else{
         alert("Invalid cell being updated.");
         return;
@@ -315,4 +345,18 @@ function updateRow(row, activity){
     endTime.setAttribute('type', 'time');
     endTime.setAttribute('time-type', 'end');
     enableCellEdit(endTime);
+
+    let category = row.insertCell(5);
+    category.innerHTML = activity.Category.String;
+    category.classList.add("edit");
+    category.setAttribute('type', 'select');
+    category.setAttribute('select-type', 'category');
+    enableCellEdit(category);
+
+    let project = row.insertCell(6);
+    project.innerHTML = activity.Project.String;
+    project.classList.add("edit");
+    project.setAttribute('type', 'select');
+    project.setAttribute('select-type', 'project');
+    enableCellEdit(project);
 }

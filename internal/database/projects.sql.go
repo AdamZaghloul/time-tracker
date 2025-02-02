@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -25,7 +24,7 @@ RETURNING id, created_at, updated_at, project, user_id
 `
 
 type CreateProjectParams struct {
-	Project sql.NullString
+	Project string
 	UserID  uuid.UUID
 }
 
