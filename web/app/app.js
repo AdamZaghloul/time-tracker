@@ -38,6 +38,9 @@ document.addEventListener("click",function(event){
 
 function logout() {
     localStorage.removeItem("token");
+    localStorage.removeItem("start_time");
+    localStorage.removeItem("activity");
+    localStorage.removeItem("override_duration");
     window.location='/';
 }
 
@@ -172,67 +175,38 @@ async function refreshLog(){
         let row = table.insertRow();
         row.setAttribute('id', activity.ID);
 
-        let date = row.insertCell(0);
-        date.innerHTML = activity.Date.split('T')[0];
-        date.classList.add("edit");
-        date.setAttribute('type', 'date');
-
-        let activityRow = row.insertCell(1);
-        activityRow.innerHTML = activity.Activity;
-        activityRow.classList.add("edit");
-        activityRow.setAttribute('type', 'text');
-
-        let duration = row.insertCell(2);
-        duration.innerHTML = activity.Duration;
-
-        let startTime = row.insertCell(3);
-        startTime.innerHTML = activity.StartTime.split('T')[1].split('Z')[0];
-        startTime.classList.add("edit");
-        startTime.setAttribute('type', 'time');
-        startTime.setAttribute('time-type', 'start');
-
-        let endTime = row.insertCell(4);
-        endTime.innerHTML = activity.EndTime.split('T')[1].split('Z')[0].split('.')[0];
-        endTime.classList.add("edit");
-        endTime.setAttribute('type', 'time');
-        endTime.setAttribute('time-type', 'end');
+        updateRow(row, activity);
       }
-
-      enableEdit();
 }
 
-async function enableEdit(){
-    let editableCells = document.querySelectorAll(".edit");
-
-    editableCells.forEach(function(cell){
-        cell.addEventListener("click",function(){
-            if(editableCell) {
-                if(cell != editableCell){
-                    makeCellUneditable(editableCell);
-                }
-            }else{
-            
-                var input = document.createElement('input');
-                input.setAttribute('type',cell.getAttribute('type'));
-                input.setAttribute('id','input-edit');
-                input.value = cell.innerHTML;
-                //input.style.width = cell.offsetWidth - (cell.clientLeft * 2) + "px";
-                //input.style.height = cell.offsetHeight - (cell.clientTop * 2) + "px";
-                
-                cell.innerHTML = '';
-                cell.append(input);
-                cell.firstElementChild.select();
-                
-                editableCell = cell;
-
-                input.addEventListener('keypress', function (e) {
-                    if (e.key === 'Enter') {
-                      makeCellUneditable(editableCell);
-                    }
-                });
+function enableCellEdit(cell){
+    cell.addEventListener("click",function(){
+        if(editableCell) {
+            if(cell != editableCell){
+                makeCellUneditable(editableCell);
             }
-        });
-      });
+        }else{
+        
+            var input = document.createElement('input');
+            input.setAttribute('type',cell.getAttribute('type'));
+            input.setAttribute('id','input-edit');
+            input.value = cell.innerHTML;
+            //input.style.width = cell.offsetWidth - (cell.clientLeft * 2) + "px";
+            //input.style.height = cell.offsetHeight - (cell.clientTop * 2) + "px";
+            
+            cell.innerHTML = '';
+            cell.append(input);
+            cell.firstElementChild.select();
+            
+            editableCell = cell;
+
+            input.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                  makeCellUneditable(editableCell);
+                }
+            });
+        }
+    });
 }
 
 async function makeCellUneditable(cell) {
@@ -264,7 +238,6 @@ async function makeCellUneditable(cell) {
 
     }else if(cell.getAttribute('type') == 'text'){
         activity = val;
-        alert(activity);
     }else if (cell.getAttribute('type') == 'time'){
         var dateArray = cell.parentNode.querySelector('[type="date"]').innerHTML.split("-");
         var year = dateArray[0];
@@ -277,10 +250,8 @@ async function makeCellUneditable(cell) {
 
         if(cell.getAttribute('time-type') == 'start'){
             startTime = new Date(newTime.getTime() - (newTime.getTimezoneOffset() * 60000));
-            alert(startTime);
         }else if (cell.getAttribute('time-type') == 'end'){
             endTime = new Date(newTime.getTime() - (newTime.getTimezoneOffset() * 60000));
-            alert(endTime);
         }else{
             alert("Invalid time cell being updated.");
             return;
@@ -307,13 +278,41 @@ async function makeCellUneditable(cell) {
         alert(`Error: ${error.message}`);
     }
     
-    cell.parentNode.innerHTML = null;
-    cell.innerHTML = input.value;
+    row = cell.parentNode;
+    row.innerHTML = null;
     input.remove();
+    updateRow(row, data);
 
     editableCell = null;
 }
 
 function updateRow(row, activity){
+    let date = row.insertCell(0);
+    date.innerHTML = activity.Date.split('T')[0];
+    date.classList.add("edit");
+    date.setAttribute('type', 'date');
+    enableCellEdit(date);
 
+    let activityRow = row.insertCell(1);
+    activityRow.innerHTML = activity.Activity;
+    activityRow.classList.add("edit");
+    activityRow.setAttribute('type', 'text');
+    enableCellEdit(activityRow);
+
+    let duration = row.insertCell(2);
+    duration.innerHTML = activity.Duration;
+
+    let startTime = row.insertCell(3);
+    startTime.innerHTML = activity.StartTime.split('T')[1].split('Z')[0];
+    startTime.classList.add("edit");
+    startTime.setAttribute('type', 'time');
+    startTime.setAttribute('time-type', 'start');
+    enableCellEdit(startTime);
+
+    let endTime = row.insertCell(4);
+    endTime.innerHTML = activity.EndTime.split('T')[1].split('Z')[0].split('.')[0];
+    endTime.classList.add("edit");
+    endTime.setAttribute('type', 'time');
+    endTime.setAttribute('time-type', 'end');
+    enableCellEdit(endTime);
 }

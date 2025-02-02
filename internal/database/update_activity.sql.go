@@ -14,47 +14,53 @@ import (
 
 const updateActivity = `-- name: UpdateActivity :one
 UPDATE activities SET
-    activity = CASE WHEN $1 IS NULL THEN activity ELSE $1 END,
-    start_time = CASE WHEN $2 IS NULL THEN start_time ELSE $2 END,
-    end_time = CASE WHEN $3 IS NULL THEN end_time ELSE $3 END,
+    activity = CASE WHEN $3::TEXT LIKE '' THEN activity ELSE $3::TEXT END,
+    start_time = CASE WHEN $4::TIMESTAMP = '0001-01-01 00:00:00 +0:00' THEN start_time ELSE $4::TIMESTAMP END,
+    end_time = CASE WHEN $5::TIMESTAMP = '0001-01-01 00:00:00 +0:00' THEN end_time ELSE $5::TIMESTAMP END,
     updated_at = NOW(),
-    project_id = CASE WHEN $4 IS NULL THEN project_id ELSE $4 END,
-    category_id = CASE WHEN $5 IS NULL THEN category_id ELSE $5 END
-WHERE id = $6 AND user_id = $7
-RETURNING id, created_at, updated_at, activity, start_time, end_time, user_id, project_id, category_id
+    project_id = CASE WHEN $6::UUID = '00000000-0000-0000-0000-000000000000' THEN project_id ELSE $6::UUID END,
+    category_id = CASE WHEN $7::UUID = '00000000-0000-0000-0000-000000000000' THEN category_id ELSE $7::UUID END
+WHERE id = $1 AND user_id = $2
+RETURNING id, DATE(start_time) AS "date", start_time, end_time, ROUND(EXTRACT(EPOCH FROM (end_time - start_time))/60) AS "duration", activity
 `
 
 type UpdateActivityParams struct {
+	ID         uuid.UUID
+	UserID     uuid.UUID
 	Activity   string
 	StartTime  time.Time
 	EndTime    time.Time
-	ProjectID  uuid.NullUUID
-	CategoryID uuid.NullUUID
-	ID         uuid.UUID
-	UserID     uuid.UUID
+	ProjectID  uuid.UUID
+	CategoryID uuid.UUID
 }
 
-func (q *Queries) UpdateActivity(ctx context.Context, arg UpdateActivityParams) (Activity, error) {
+type UpdateActivityRow struct {
+	ID        uuid.UUID
+	Date      time.Time
+	StartTime time.Time
+	EndTime   time.Time
+	Duration  float64
+	Activity  string
+}
+
+func (q *Queries) UpdateActivity(ctx context.Context, arg UpdateActivityParams) (UpdateActivityRow, error) {
 	row := q.db.QueryRowContext(ctx, updateActivity,
+		arg.ID,
+		arg.UserID,
 		arg.Activity,
 		arg.StartTime,
 		arg.EndTime,
 		arg.ProjectID,
 		arg.CategoryID,
-		arg.ID,
-		arg.UserID,
 	)
-	var i Activity
+	var i UpdateActivityRow
 	err := row.Scan(
 		&i.ID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Activity,
+		&i.Date,
 		&i.StartTime,
 		&i.EndTime,
-		&i.UserID,
-		&i.ProjectID,
-		&i.CategoryID,
+		&i.Duration,
+		&i.Activity,
 	)
 	return i, err
 }

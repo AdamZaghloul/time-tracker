@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -113,33 +112,14 @@ func (cfg *apiConfig) handlerUpdateActivity(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	preparedProjectId := uuid.NullUUID{}
-	preparedCategoryId := uuid.NullUUID{}
-
-	if params.ProjectID == uuid.Nil {
-		preparedProjectId.Valid = false
-	} else {
-		preparedProjectId.Valid = true
-		preparedProjectId.UUID = params.ProjectID
-	}
-
-	if params.CategoryID == uuid.Nil {
-		preparedCategoryId.Valid = false
-	} else {
-		preparedCategoryId.Valid = true
-		preparedCategoryId.UUID = params.CategoryID
-	}
-
-	fmt.Println(params)
-
 	activity, err := cfg.db.UpdateActivity(r.Context(), database.UpdateActivityParams{
 		ID:         params.ID,
 		StartTime:  params.StartTime,
 		Activity:   params.Activity,
 		EndTime:    params.EndTime,
 		UserID:     userID,
-		ProjectID:  preparedProjectId,
-		CategoryID: preparedCategoryId,
+		ProjectID:  params.ProjectID,
+		CategoryID: params.CategoryID,
 	})
 
 	if err != nil {

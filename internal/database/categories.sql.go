@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -24,7 +25,7 @@ RETURNING id, created_at, updated_at, category, user_id
 `
 
 type CreateCategoryParams struct {
-	Category string
+	Category sql.NullString
 	UserID   uuid.UUID
 }
 

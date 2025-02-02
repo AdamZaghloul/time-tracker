@@ -27,7 +27,7 @@ type Category struct {
 	ID        uuid.UUID
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Category  string
+	Category  sql.NullString
 	UserID    uuid.UUID
 }
 
@@ -35,7 +35,7 @@ type Project struct {
 	ID        uuid.UUID
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Project   string
+	Project   sql.NullString
 	UserID    uuid.UUID
 }
 
