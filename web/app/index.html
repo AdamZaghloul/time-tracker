@@ -17,10 +17,10 @@
                 <span class="subtitle">Know your time.</span>
             </h1>
             <ul>
-                <li><a id="track-link" href="javascript:void(0);" onclick="navTrack();" class="selected">Track</a></li>
-                <li><a id="log-link" href="javascript:void(0);" onclick="navLog();">Log</a></li>
-                <li><a id="report-link" href="#">Report</a></li>
-                <li><a id="settings-link" href="#">Settings</a></li>
+                <li><a id="track-link" href="javascript:void(0);" onclick="nav('track');" class="selected">Track</a></li>
+                <li><a id="log-link" href="javascript:void(0);" onclick="nav('log');">Log</a></li>
+                <li><a id="report-link" href="javascript:void(0);">Report</a></li>
+                <li><a id="settings-link" href="javascript:void(0);" onclick="nav('settings');">Settings</a></li>
             </ul>
             <button onclick="logout();" type="button">Logout</button>
         </div>
@@ -80,6 +80,13 @@
                 <tbody id="logTableBody">
                 </tbody>
             </table>
+        </div>
+
+        <div id="settings-section" class="track-content" style="display: none">
+            <h2>
+                Settings
+                <span id="submit-message" class="submit-subtitle"></span>
+            </h2>
         </div>
     </body>
 </html>

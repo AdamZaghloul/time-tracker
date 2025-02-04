@@ -135,12 +135,31 @@ function storeProgress(key){
     localStorage.setItem(key, document.getElementById(key).value);
 }
 
-function navTrack(){
-    document.getElementById("track-section").style.display = "block";
+function navRemove(){
+    document.getElementById("track-section").style.display = "none";
     document.getElementById("log-section").style.display = "none";
+    //document.getElementById("report-section").style.display = "none";
+    document.getElementById("settings-section").style.display = "none";
 
-    document.getElementById("track-link").classList.add("selected");
+    document.getElementById("track-link").classList.remove("selected");
     document.getElementById("log-link").classList.remove("selected");
+    //document.getElementById("report-link").classList.remove("selected");
+    document.getElementById("settings-link").classList.remove("selected");
+}
+
+function nav(page){
+
+    navRemove();
+
+    let section = page + "-section";
+    let link = page + "-link"
+    
+    document.getElementById(section).style.display = "block";
+    document.getElementById(link).classList.add("selected");
+
+    if(page == 'log'){
+        refreshLog();
+    }
    
 }
 
