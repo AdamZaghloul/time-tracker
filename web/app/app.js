@@ -1,5 +1,9 @@
 let editableRow = null;
 let editableCell = null;
+let categoryNames = [];
+let categoryValues = [];
+let projectNames = [];
+let projectValues = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
@@ -177,6 +181,8 @@ async function refreshLog(){
 
         updateRow(row, activity);
       }
+
+      loadDropdowns();
 }
 
 function enableCellEdit(cell){
@@ -193,22 +199,25 @@ function enableCellEdit(cell){
             if(type == 'select'){
                 input = document.createElement('select');
                 subType = cell.getAttribute('select-type');
-                var array = ["Volvo","Saab","Mercades","Audi"];
+                var nameArray = [];
+                var valueArray = [];
 
                 if(subType == 'category'){
-                    for (var i = 0; i < array.length; i++) {
-                        var option = document.createElement("option");
-                        option.value = array[i];
-                        option.text = array[i];
-                        input.appendChild(option);
-                    }
+                    nameArray = categoryNames;
+                    valueArray = categoryValues
                 }else if(subType == 'project'){
-                    for (var i = 0; i < array.length; i++) {
-                        var option = document.createElement("option");
-                        option.value = array[i];
-                        option.text = array[i];
-                        input.appendChild(option);
-                    }
+                    nameArray = projectNames;
+                    valueArray = projectValues;
+                }else{
+                    alert("Invalid select type.");
+                    return;
+                }
+
+                for (var i = 0; i < nameArray.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = valueArray[i];
+                    option.text = nameArray[i];
+                    input.appendChild(option);
                 }
             }else{
             
@@ -223,7 +232,7 @@ function enableCellEdit(cell){
             
             cell.innerHTML = '';
             cell.append(input);
-            type != 'select' ? cell.firstElementChild.select(): null;
+            type != 'select' ? cell.firstElementChild.select(): document.getElementById('input-edit').focus();
             
             editableCell = cell;
 
@@ -284,8 +293,21 @@ async function makeCellUneditable(cell) {
             return;
         }
     }else if (cell.getAttribute('type') == 'select'){
-        alert("Category or project");
-        return;
+        dropdown = document.getElementById('input-edit');
+        if(dropdown.selectedIndex == -1){
+            input.remove();
+            editableCell = null;
+          
+            return;
+        }
+
+        if(cell.getAttribute('select-type') == 'category'){
+            category = dropdown.options[dropdown.selectedIndex].value;
+        }else if(cell.getAttribute('select-type') == 'project'){
+            project = dropdown.options[dropdown.selectedIndex].value;
+        }else{
+            alert("Invald select type.")
+        }
     }else{
         alert("Invalid cell being updated.");
         return;
@@ -306,6 +328,10 @@ async function makeCellUneditable(cell) {
         }
     } catch (error) {
         alert(`Error: ${error.message}`);
+        input.remove();
+        editableCell = null;
+          
+        return;
     }
     
     row = cell.parentNode;
@@ -359,4 +385,60 @@ function updateRow(row, activity){
     project.setAttribute('type', 'select');
     project.setAttribute('select-type', 'project');
     enableCellEdit(project);
+}
+
+async function loadDropdowns(){
+    var data;
+
+    try {
+        const res = await fetch("/api/categories", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        data = await res.json();
+        if (!res.ok) {
+          throw new Error(`Failed to get categories: ${data.error}`);
+        }
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
+
+      if (data == null){
+        categoryNames.push("Add categories in Settings");
+        categoryValues.push("00000000-0000-0000-0000-000000000000");
+      }else{
+        for (const category of data){
+            categoryNames.push(category.Category);
+            categoryValues.push(category.Id);
+          }
+      }
+
+      try {
+        const res = await fetch("/api/projects", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        data = await res.json();
+        if (!res.ok) {
+          throw new Error(`Failed to get projects: ${data.error}`);
+        }
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
+
+      if (data == null){
+        projectNames.push("Add projects in Settings");
+        projectValues.push("00000000-0000-0000-0000-000000000000");
+      }else{
+        for (const project of data){
+            projectNames.push(project.Category);
+            projectValues.push(project.Id);
+          }
+      }
 }

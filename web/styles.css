@@ -12,6 +12,7 @@
     --button-bg: #2695a6;
     --button-bg-disabled: #494e4f;
     --button-hover: #256f7a;
+    --td-hover: #2ca9bc81;
 }
 
 body {
@@ -181,6 +182,11 @@ table {
 }
 
 td{
+    text-align: left;
+}
+
+td:hover{
+    background-color: var(--td-hover);
     text-align: left;
 }
 
