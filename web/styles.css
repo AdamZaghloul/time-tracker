@@ -2,6 +2,7 @@
     --bg-color: #1e1e1e;
     --table-alt-bg-color: #444444;
     --table-hover-color: #ddd;
+    --tooltip-info-color: #ddd;
     --fg-color-old: #f5f5f5;
     --fg-color: #888;
     --subtle-color: #888;
@@ -194,6 +195,35 @@ th{
     color: var(--primary-color);
     text-align: left;
 }
+
+th .tooltip{
+    color: var(--tooltip-info-color);
+    text-align: left;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 250px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
 
 /*tbody tr:hover {
     background-color: var(--table-hover-color);
