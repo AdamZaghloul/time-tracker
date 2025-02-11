@@ -20,7 +20,7 @@ VALUES (
     $1,
     $2
 )
-RETURNING id, created_at, updated_at, category, user_id
+RETURNING id, created_at, updated_at, category, user_id, autofill_terms
 `
 
 type CreateCategoryParams struct {
@@ -37,6 +37,7 @@ func (q *Queries) CreateCategory(ctx context.Context, arg CreateCategoryParams) 
 		&i.UpdatedAt,
 		&i.Category,
 		&i.UserID,
+		&i.AutofillTerms,
 	)
 	return i, err
 }

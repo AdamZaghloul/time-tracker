@@ -12,12 +12,13 @@ import (
 )
 
 const getProjectsForUser = `-- name: GetProjectsForUser :many
-SELECT id, project FROM projects WHERE user_id = $1
+SELECT id, project, autofill_terms FROM projects WHERE user_id = $1
 `
 
 type GetProjectsForUserRow struct {
-	ID      uuid.UUID
-	Project string
+	ID            uuid.UUID
+	Project       string
+	AutofillTerms string
 }
 
 func (q *Queries) GetProjectsForUser(ctx context.Context, userID uuid.UUID) ([]GetProjectsForUserRow, error) {
@@ -29,7 +30,7 @@ func (q *Queries) GetProjectsForUser(ctx context.Context, userID uuid.UUID) ([]G
 	var items []GetProjectsForUserRow
 	for rows.Next() {
 		var i GetProjectsForUserRow
-		if err := rows.Scan(&i.ID, &i.Project); err != nil {
+		if err := rows.Scan(&i.ID, &i.Project, &i.AutofillTerms); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

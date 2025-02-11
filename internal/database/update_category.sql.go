@@ -13,18 +13,27 @@ import (
 
 const updateCategory = `-- name: UpdateCategory :one
 
-UPDATE categories SET category = $1 WHERE id = $2 AND user_id = $3
-RETURNING id, created_at, updated_at, category, user_id
+UPDATE categories SET 
+category = CASE WHEN $3::TEXT LIKE '' THEN category ELSE $3::TEXT END, 
+autofill_terms = CASE WHEN $4::TEXT LIKE '' AND $3::TEXT LIKE '' THEN '' WHEN $4::TEXT LIKE '' THEN autofill_terms ELSE $4::TEXT END 
+WHERE id = $1 AND user_id = $2
+RETURNING id, created_at, updated_at, category, user_id, autofill_terms
 `
 
 type UpdateCategoryParams struct {
-	Category string
-	ID       uuid.UUID
-	UserID   uuid.UUID
+	ID            uuid.UUID
+	UserID        uuid.UUID
+	Category      string
+	AutofillTerms string
 }
 
 func (q *Queries) UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error) {
-	row := q.db.QueryRowContext(ctx, updateCategory, arg.Category, arg.ID, arg.UserID)
+	row := q.db.QueryRowContext(ctx, updateCategory,
+		arg.ID,
+		arg.UserID,
+		arg.Category,
+		arg.AutofillTerms,
+	)
 	var i Category
 	err := row.Scan(
 		&i.ID,
@@ -32,6 +41,7 @@ func (q *Queries) UpdateCategory(ctx context.Context, arg UpdateCategoryParams) 
 		&i.UpdatedAt,
 		&i.Category,
 		&i.UserID,
+		&i.AutofillTerms,
 	)
 	return i, err
 }

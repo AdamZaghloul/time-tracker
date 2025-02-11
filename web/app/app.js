@@ -2,8 +2,10 @@ let editableRow = null;
 let editableCell = null;
 let categoryNames = [];
 let categoryValues = [];
+let categoryTerms = [];
 let projectNames = [];
 let projectValues = [];
+let projectTerms = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
@@ -159,18 +161,10 @@ function nav(page){
 
     if(page == 'log'){
         refreshLog();
+    }else if(page == 'settings'){
+      refreshSettings();
     }
    
-}
-
-async function navLog(){
-    document.getElementById("track-section").style.display = "none";
-    document.getElementById("log-section").style.display = "block";
-
-    document.getElementById("track-link").classList.remove("selected");
-    document.getElementById("log-link").classList.add("selected");
-
-    refreshLog();
 }
 
 async function refreshLog(){
@@ -193,12 +187,13 @@ async function refreshLog(){
       }
       
       const table = document.getElementById("logTableBody");
+      table.innerHTML = '';
 
       for (const activity of data){
         let row = table.insertRow();
         row.setAttribute('id', activity.ID);
 
-        updateRow(row, activity);
+        updateLogRow(row, activity);
       }
 
       loadDropdowns();
@@ -361,7 +356,7 @@ async function makeCellUneditable(cell) {
     editableCell = null;
 }
 
-function updateRow(row, activity){
+function updateLogRow(row, activity){
     let date = row.insertCell(0);
     date.innerHTML = activity.Date.split('T')[0];
     date.classList.add("edit");
@@ -408,6 +403,12 @@ function updateRow(row, activity){
 
 async function loadDropdowns(){
     var data;
+    projectNames = [];
+    projectTerms = [];
+    projectValues = [];
+    categoryNames = [];
+    categoryTerms = [];
+    categoryValues = [];
 
     try {
         const res = await fetch("/api/categories", {
@@ -428,10 +429,12 @@ async function loadDropdowns(){
       if (data == null){
         categoryNames.push("Add categories in Settings");
         categoryValues.push("00000000-0000-0000-0000-000000000000");
+        categoryTerms.push("");
       }else{
         for (const category of data){
             categoryNames.push(category.Category);
             categoryValues.push(category.Id);
+            categoryTerms.push(category.Terms);
           }
       }
 
@@ -454,10 +457,65 @@ async function loadDropdowns(){
       if (data == null){
         projectNames.push("Add projects in Settings");
         projectValues.push("00000000-0000-0000-0000-000000000000");
+        projectTerms.push("");
       }else{
         for (const project of data){
             projectNames.push(project.Category);
             projectValues.push(project.Id);
+            projectTerms.push(project.Terms);
           }
       }
+}
+
+async function refreshSettings(){
+  
+  await loadDropdowns();
+
+  const categoryTable = document.getElementById("categoryTableBody");
+  for (var i = 0; i < categoryTable.rows.length-1; i++){
+    categoryTable.deleteRow(i);
+  }
+
+  for (var i = 0; i < categoryNames.length; i++){
+    if (categoryValues[i] != "00000000-0000-0000-0000-000000000000"){
+      let row = categoryTable.insertRow(categoryTable.ariaRowSpan.length - 1);
+      row.setAttribute('id', categoryValues[i]);
+
+      let categoryRow = row.insertCell(1);
+      categoryRow.innerHTML = categoryNames[i];
+      categoryRow.classList.add("edit");
+      categoryRow.setAttribute('type', 'text');
+      //enableCellEdit(activityRow);
+
+      let termsRow = row.insertCell(1);
+      termsRow.innerHTML = categoryTerms[i];
+      termsRow.classList.add("edit");
+      termsRow.setAttribute('type', 'text');
+      //enableCellEdit(activityRow);
+    }
+  }
+
+  const projectTable = document.getElementById("projectTableBody");
+  for (var i = 0; i < projectTable.rows.length-1; i++){
+    projectTable.deleteRow(i);
+  }
+
+  for (var i = 0; i < projectNames.length; i++){
+    if (projectValues[i] != "00000000-0000-0000-0000-000000000000"){
+      let row = projectTable.insertRow(projectTable.rows.length - 1);
+      row.setAttribute('id', projectValues[i]);
+
+      let projectRow = row.insertCell(1);
+      projectRow.innerHTML = projectNames[i];
+      projectRow.classList.add("edit");
+      projectRow.setAttribute('type', 'text');
+      //enableCellEdit(activityRow);
+
+      let termsRow = row.insertCell(1);
+      termsRow.innerHTML = projectTerms[i];
+      termsRow.classList.add("edit");
+      termsRow.setAttribute('type', 'text');
+      //enableCellEdit(activityRow);
+    }
+  }
 }

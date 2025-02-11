@@ -77,8 +77,9 @@ func (cfg *apiConfig) handlerGetCategories(w http.ResponseWriter, r *http.Reques
 
 func (cfg *apiConfig) handlerUpdateCategory(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
-		ID       uuid.UUID `json:"id"`
-		Category string    `json:"category"`
+		ID            uuid.UUID `json:"id"`
+		Category      string    `json:"category"`
+		AutofillTerms string    `json:"terms"`
 	}
 
 	token, err := auth.GetBearerToken(r.Header)
@@ -102,9 +103,10 @@ func (cfg *apiConfig) handlerUpdateCategory(w http.ResponseWriter, r *http.Reque
 	}
 
 	category, err := cfg.db.UpdateCategory(r.Context(), database.UpdateCategoryParams{
-		ID:       params.ID,
-		UserID:   userID,
-		Category: params.Category,
+		ID:            params.ID,
+		UserID:        userID,
+		Category:      params.Category,
+		AutofillTerms: params.AutofillTerms,
 	})
 
 	if err != nil {

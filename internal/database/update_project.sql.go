@@ -13,24 +13,34 @@ import (
 
 const updateProject = `-- name: UpdateProject :one
 
-UPDATE projects SET project = $1 WHERE id = $2 AND user_id = $3
-RETURNING id, created_at, updated_at, project, user_id
+UPDATE projects SET 
+project = CASE WHEN $3::TEXT LIKE '' THEN project ELSE $3::TEXT END, 
+autofill_terms = CASE WHEN $4::TEXT LIKE '' AND $3::TEXT LIKE '' THEN '' WHEN $4::TEXT LIKE '' THEN autofill_terms ELSE $4::TEXT END 
+WHERE id = $1 AND user_id = $2
+RETURNING id, created_at, updated_at, project, autofill_terms, user_id
 `
 
 type UpdateProjectParams struct {
-	Project string
-	ID      uuid.UUID
-	UserID  uuid.UUID
+	ID            uuid.UUID
+	UserID        uuid.UUID
+	Project       string
+	AutofillTerms string
 }
 
 func (q *Queries) UpdateProject(ctx context.Context, arg UpdateProjectParams) (Project, error) {
-	row := q.db.QueryRowContext(ctx, updateProject, arg.Project, arg.ID, arg.UserID)
+	row := q.db.QueryRowContext(ctx, updateProject,
+		arg.ID,
+		arg.UserID,
+		arg.Project,
+		arg.AutofillTerms,
+	)
 	var i Project
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Project,
+		&i.AutofillTerms,
 		&i.UserID,
 	)
 	return i, err

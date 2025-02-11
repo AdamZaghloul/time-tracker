@@ -12,12 +12,13 @@ import (
 )
 
 const getCategoriesForUser = `-- name: GetCategoriesForUser :many
-SELECT id, category FROM categories WHERE user_id = $1
+SELECT id, category, autofill_terms FROM categories WHERE user_id = $1
 `
 
 type GetCategoriesForUserRow struct {
-	ID       uuid.UUID
-	Category string
+	ID            uuid.UUID
+	Category      string
+	AutofillTerms string
 }
 
 func (q *Queries) GetCategoriesForUser(ctx context.Context, userID uuid.UUID) ([]GetCategoriesForUserRow, error) {
@@ -29,7 +30,7 @@ func (q *Queries) GetCategoriesForUser(ctx context.Context, userID uuid.UUID) ([
 	var items []GetCategoriesForUserRow
 	for rows.Next() {
 		var i GetCategoriesForUserRow
-		if err := rows.Scan(&i.ID, &i.Category); err != nil {
+		if err := rows.Scan(&i.ID, &i.Category, &i.AutofillTerms); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

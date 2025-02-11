@@ -20,7 +20,7 @@ VALUES (
     $1,
     $2
 )
-RETURNING id, created_at, updated_at, project, user_id
+RETURNING id, created_at, updated_at, project, autofill_terms, user_id
 `
 
 type CreateProjectParams struct {
@@ -36,6 +36,7 @@ func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (P
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Project,
+		&i.AutofillTerms,
 		&i.UserID,
 	)
 	return i, err

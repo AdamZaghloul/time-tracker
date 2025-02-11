@@ -186,7 +186,7 @@ td{
     text-align: left;
 }
 
-td:hover{
+td.edit:hover{
     background-color: var(--td-hover);
     text-align: left;
 }

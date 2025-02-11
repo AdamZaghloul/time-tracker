@@ -77,8 +77,9 @@ func (cfg *apiConfig) handlerGetProjects(w http.ResponseWriter, r *http.Request)
 
 func (cfg *apiConfig) handlerUpdateProject(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
-		ID      uuid.UUID `json:"id"`
-		Project string    `json:"project"`
+		ID            uuid.UUID `json:"id"`
+		Project       string    `json:"project"`
+		AutofillTerms string    `json:"terms"`
 	}
 
 	token, err := auth.GetBearerToken(r.Header)
@@ -102,9 +103,10 @@ func (cfg *apiConfig) handlerUpdateProject(w http.ResponseWriter, r *http.Reques
 	}
 
 	project, err := cfg.db.UpdateProject(r.Context(), database.UpdateProjectParams{
-		ID:      params.ID,
-		UserID:  userID,
-		Project: params.Project,
+		ID:            params.ID,
+		UserID:        userID,
+		Project:       params.Project,
+		AutofillTerms: params.AutofillTerms,
 	})
 
 	if err != nil {

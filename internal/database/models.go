@@ -24,19 +24,21 @@ type Activity struct {
 }
 
 type Category struct {
-	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Category  string
-	UserID    uuid.UUID
+	ID            uuid.UUID
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Category      string
+	UserID        uuid.UUID
+	AutofillTerms string
 }
 
 type Project struct {
-	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Project   string
-	UserID    uuid.UUID
+	ID            uuid.UUID
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Project       string
+	AutofillTerms string
+	UserID        uuid.UUID
 }
 
 type RefreshToken struct {

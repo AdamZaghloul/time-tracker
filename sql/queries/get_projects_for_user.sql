@@ -1,2 +1,2 @@
 -- name: GetProjectsForUser :many
-SELECT id, project FROM projects WHERE user_id = $1;
+SELECT id, project, autofill_terms FROM projects WHERE user_id = $1;
