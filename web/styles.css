@@ -225,6 +225,15 @@ th .tooltip{
     visibility: visible;
   }
 
+h4{
+    color: var(--primary-color);
+    text-align: left;
+}
+h4 .tooltip{
+    color: var(--tooltip-info-color);
+    text-align: left;
+}
+
 /*tbody tr:hover {
     background-color: var(--table-hover-color);
 }*/
