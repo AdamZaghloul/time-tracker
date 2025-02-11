@@ -5,6 +5,7 @@ CREATE TABLE categories(
     updated_at TIMESTAMP NOT NULL,
     category TEXT NOT NULL UNIQUE,
     user_id UUID NOT NULL,
+    autofill_terms TEXT NOT NULL,
     FOREIGN KEY (user_id)
     REFERENCES users(id) ON DELETE CASCADE
 );

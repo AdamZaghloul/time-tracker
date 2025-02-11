@@ -4,6 +4,7 @@ CREATE TABLE projects(
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     project TEXT NOT NULL UNIQUE,
+    autofill_terms TEXT NOT NULL,
     user_id UUID NOT NULL,
     FOREIGN KEY (user_id)
     REFERENCES users(id) ON DELETE CASCADE
