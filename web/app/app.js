@@ -35,10 +35,10 @@ document
   });
 
 document.addEventListener("click",function(event){
-    if(editableCell && editableCell != event.target && editableCell != event.target.parentNode){
-        makeCellUneditable(editableCell);
-        editableCell = null;
-        return;
+    if(editableCell && editableCell != event.target && editableCell != event.target.parentNode && event.target.getAttribute("type") != "button"){  
+      makeCellUneditable(editableCell);
+      editableCell = null;
+      return;
     }
 });
 
@@ -261,13 +261,19 @@ function enableCellEdit(cell){
 
 async function makeCellUneditable(cell) {
     input = document.getElementById("input-edit");
+    table = cell.parentNode.id;
     val = input.value;
     let startTime = null;
     let endTime = null;
     let activity = null;
     let category = null;
     let project = null;
+    let categoryProjectName = null;
+    let categoryProjectTerms = null;
     let data = null;
+    let endpoint = null;
+    let jsonBody = null;
+    let apiMethod = null;
     let id = cell.parentNode.getAttribute("id");
 
     if(cell.getAttribute('type') == 'date'){
@@ -287,7 +293,18 @@ async function makeCellUneditable(cell) {
         endTime = new Date(endTime.getTime() - (endTime.getTimezoneOffset() * 60000));
 
     }else if(cell.getAttribute('type') == 'text'){
+      if(table == "logTableBody"){  
         activity = val;
+      }else if (table == "categoryTableBody" || table == "projectTableBody"){
+        if (cell.cellIndex == 0){
+          categoryProjectName = val; 
+        }else if (cell.cellIndex == 1){
+          categoryProjectTerms = val;
+        }else{
+          alert("Invalid cell index.");
+          return;
+        }
+      }
     }else if (cell.getAttribute('type') == 'time'){
         var dateArray = cell.parentNode.querySelector('[type="date"]').innerHTML.split("-");
         var year = dateArray[0];
@@ -326,19 +343,38 @@ async function makeCellUneditable(cell) {
         alert("Invalid cell being updated.");
         return;
     }
+
+    if(table == "logTableBody"){
+      apiMethod = "PUT";
+      endpoint = "/api/activities";
+      jsonBody = JSON.stringify({ id, startTime, activity, endTime, category, project });
+    }else if(table == "categoryTableBody" || table == "projectTableBody"){
+      if(id == ""){
+        jsonBody = JSON.stringify({ categoryProjectName });
+        apiMethod = "POST";
+      }else{
+        jsonBody = JSON.stringify({ id, categoryProjectName });
+        apiMethod = "PUT";
+      }
+      if(table == "categoryTableBody"){
+        endpoint = "/api/categories";
+      }else{
+        endpoint = "/api/projects";
+      }
+    }
     
     try {
-        const res = await fetch("/api/activities", {
-            method: "PUT",
+        const res = await fetch(endpoint, {
+            method: apiMethod,
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
-            body: JSON.stringify({ id, startTime, activity, endTime, category, project }),
+            body: jsonBody,
         });
         data = await res.json();
         if (!res.ok) {
-          throw new Error(`Failed to update activity: ${data.error}`);
+          throw new Error(`Failed to update ${table}: ${data.error}`);
         }
     } catch (error) {
         alert(`Error: ${error.message}`);
@@ -351,9 +387,51 @@ async function makeCellUneditable(cell) {
     row = cell.parentNode;
     row.innerHTML = null;
     input.remove();
-    updateRow(row, data);
+    if(table == "logTableBody"){
+      updateLogRow(row, data);
+    }else if(table == "categoryTableBody"){
+      categoryValues.push(data.Id);
+      categoryNames.push(data.Category);
+      categoryTerms.push(data.Terms);
+
+      updateCategoryRow(row, categoryValues.length - 1);
+    }else if(table == "projectTableBody"){
+      projectValues.push(data.Id);
+      projectNames.push(data.Project);
+      projectTerms.push(data.Terms);
+      
+      updateProjectRow(row, projectValues.length - 1);
+    }
 
     editableCell = null;
+}
+
+function updateCategoryRow(row, i){
+  let categoryRow = row.insertCell(0);
+  categoryRow.innerHTML = categoryNames[i];
+  categoryRow.classList.add("edit");
+  categoryRow.setAttribute('type', 'text');
+  enableCellEdit(categoryRow);
+
+  let termsRow = row.insertCell(1);
+  termsRow.innerHTML = categoryTerms[i];
+  termsRow.classList.add("edit");
+  termsRow.setAttribute('type', 'text');
+  enableCellEdit(termsRow);
+}
+
+function updateProjectRow(row, i){
+  let projectRow = row.insertCell(0);
+  projectRow.innerHTML = projectNames[i];
+  projectRow.classList.add("edit");
+  projectRow.setAttribute('type', 'text');
+  enableCellEdit(projectRow);
+
+  let termsRow = row.insertCell(1);
+  termsRow.innerHTML = projectTerms[i];
+  termsRow.classList.add("edit");
+  termsRow.setAttribute('type', 'text');
+  enableCellEdit(termsRow);
 }
 
 function updateLogRow(row, activity){
@@ -467,6 +545,24 @@ async function loadDropdowns(){
       }
 }
 
+async function addCategoryProject(type){
+  const table = document.getElementById(type + "TableBody");
+  let row = table.insertRow(table.rows.length - 1);
+  row.setAttribute('id', "");
+
+  let nameCell = row.insertCell(0);
+  nameCell.classList.add("edit");
+  nameCell.setAttribute('type', 'text');
+  enableCellEdit(nameCell);
+
+  let termsCell = row.insertCell(1);
+  termsCell.classList.add("edit");
+  termsCell.setAttribute('type', 'text');
+  enableCellEdit(termsCell);
+
+  nameCell.click();
+}
+
 async function refreshSettings(){
   
   await loadDropdowns();
@@ -478,20 +574,10 @@ async function refreshSettings(){
 
   for (var i = 0; i < categoryNames.length; i++){
     if (categoryValues[i] != "00000000-0000-0000-0000-000000000000"){
-      let row = categoryTable.insertRow(categoryTable.ariaRowSpan.length - 1);
+      let row = categoryTable.insertRow(categoryTable.rows.length - 1);
       row.setAttribute('id', categoryValues[i]);
 
-      let categoryRow = row.insertCell(1);
-      categoryRow.innerHTML = categoryNames[i];
-      categoryRow.classList.add("edit");
-      categoryRow.setAttribute('type', 'text');
-      //enableCellEdit(activityRow);
-
-      let termsRow = row.insertCell(1);
-      termsRow.innerHTML = categoryTerms[i];
-      termsRow.classList.add("edit");
-      termsRow.setAttribute('type', 'text');
-      //enableCellEdit(activityRow);
+      updateCategoryRow(row, i);
     }
   }
 
@@ -505,17 +591,7 @@ async function refreshSettings(){
       let row = projectTable.insertRow(projectTable.rows.length - 1);
       row.setAttribute('id', projectValues[i]);
 
-      let projectRow = row.insertCell(1);
-      projectRow.innerHTML = projectNames[i];
-      projectRow.classList.add("edit");
-      projectRow.setAttribute('type', 'text');
-      //enableCellEdit(activityRow);
-
-      let termsRow = row.insertCell(1);
-      termsRow.innerHTML = projectTerms[i];
-      termsRow.classList.add("edit");
-      termsRow.setAttribute('type', 'text');
-      //enableCellEdit(activityRow);
+      updateProjectRow(row, i);
     }
   }
 }
