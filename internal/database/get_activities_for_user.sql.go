@@ -14,7 +14,7 @@ import (
 )
 
 const getActivitiesForUser = `-- name: GetActivitiesForUser :many
-SELECT a.id, DATE(a.start_time) AS "date", a.start_time, a.end_time, ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time))/60) AS "duration", a.activity, a.project_id, a.category_id, p.project, c.category FROM activities a LEFT JOIN projects p ON a.project_id::UUID = p.id::UUID LEFT JOIN categories c ON a.category_id::UUID = c.category::UUID WHERE a.user_id = $1 ORDER BY a.start_time DESC
+SELECT a.id, DATE(a.start_time) AS "date", a.start_time, a.end_time, ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time))/60) AS "duration", a.activity, a.project_id, a.category_id, p.project, c.category FROM activities a LEFT JOIN projects p ON a.project_id::UUID = p.id::UUID LEFT JOIN categories c ON a.category_id::UUID = c.id::UUID WHERE a.user_id = $1 ORDER BY a.start_time DESC
 `
 
 type GetActivitiesForUserRow struct {

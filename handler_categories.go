@@ -11,10 +11,7 @@ import (
 
 func (cfg *apiConfig) handlerCreateCategory(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
-		Category string `json:"category"`
-	}
-	type response struct {
-		database.Category
+		Category string `json:"categoryProjectName"`
 	}
 
 	token, err := auth.GetBearerToken(r.Header)
@@ -47,9 +44,7 @@ func (cfg *apiConfig) handlerCreateCategory(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, response{
-		category,
-	})
+	respondWithJSON(w, http.StatusOK, category)
 }
 
 func (cfg *apiConfig) handlerGetCategories(w http.ResponseWriter, r *http.Request) {
@@ -78,8 +73,8 @@ func (cfg *apiConfig) handlerGetCategories(w http.ResponseWriter, r *http.Reques
 func (cfg *apiConfig) handlerUpdateCategory(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		ID            uuid.UUID `json:"id"`
-		Category      string    `json:"category"`
-		AutofillTerms string    `json:"terms"`
+		Category      string    `json:"categoryProjectName"`
+		AutofillTerms string    `json:"categoryProjectTerms"`
 	}
 
 	token, err := auth.GetBearerToken(r.Header)

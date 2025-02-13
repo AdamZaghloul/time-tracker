@@ -227,10 +227,19 @@ function enableCellEdit(cell){
                     return;
                 }
 
+                var option = document.createElement("option");
+                option.value = "00000000-0000-0000-0000-000000000000";
+                option.text = "";
+                input.appendChild(option);
+
                 for (var i = 0; i < nameArray.length; i++) {
                     var option = document.createElement("option");
                     option.value = valueArray[i];
                     option.text = nameArray[i];
+                    if(option.value == cell.getAttribute("id")){
+                      option.selected = true;
+                    }
+
                     input.appendChild(option);
                 }
             }else{
@@ -240,7 +249,9 @@ function enableCellEdit(cell){
     
             input.setAttribute('type', type);
             input.setAttribute('id','input-edit');
-            input.value = cell.innerHTML;
+            if (type != 'select'){
+              input.value = cell.innerHTML;
+            }
             //input.style.width = cell.offsetWidth - (cell.clientLeft * 2) + "px";
             //input.style.height = cell.offsetHeight - (cell.clientTop * 2) + "px";
             
@@ -261,7 +272,7 @@ function enableCellEdit(cell){
 
 async function makeCellUneditable(cell) {
     input = document.getElementById("input-edit");
-    table = cell.parentNode.id;
+    table = cell.parentNode.parentNode.id;
     val = input.value;
     let startTime = null;
     let endTime = null;
@@ -325,12 +336,12 @@ async function makeCellUneditable(cell) {
         }
     }else if (cell.getAttribute('type') == 'select'){
         dropdown = document.getElementById('input-edit');
-        if(dropdown.selectedIndex == -1){
+        /*if(dropdown.selectedIndex == -1){
             input.remove();
             editableCell = null;
           
             return;
-        }
+        }*/
 
         if(cell.getAttribute('select-type') == 'category'){
             category = dropdown.options[dropdown.selectedIndex].value;
@@ -352,8 +363,13 @@ async function makeCellUneditable(cell) {
       if(id == ""){
         jsonBody = JSON.stringify({ categoryProjectName });
         apiMethod = "POST";
+        if(categoryProjectName == ""){
+          cell.parentNode.remove();
+          editableCell = null;
+          return;
+        }
       }else{
-        jsonBody = JSON.stringify({ id, categoryProjectName });
+        jsonBody = JSON.stringify({ id, categoryProjectName, categoryProjectTerms });
         apiMethod = "PUT";
       }
       if(table == "categoryTableBody"){
@@ -390,17 +406,37 @@ async function makeCellUneditable(cell) {
     if(table == "logTableBody"){
       updateLogRow(row, data);
     }else if(table == "categoryTableBody"){
-      categoryValues.push(data.Id);
-      categoryNames.push(data.Category);
-      categoryTerms.push(data.Terms);
+      if (id == ""){
+        categoryValues.push(data.ID);
+        categoryNames.push(data.Category);
+        categoryTerms.push(data.AutofillTerms);
+        row.setAttribute("id", data.ID);
 
-      updateCategoryRow(row, categoryValues.length - 1);
+        updateCategoryRow(row, categoryValues.length - 1);
+      }else{
+        i = row.rowIndex;
+        categoryValues[i] = data.ID;
+        categoryNames[i] = data.Category;
+        categoryTerms[i] = data.AutofillTerms;
+
+        updateCategoryRow(row, i);
+      }
     }else if(table == "projectTableBody"){
-      projectValues.push(data.Id);
-      projectNames.push(data.Project);
-      projectTerms.push(data.Terms);
-      
-      updateProjectRow(row, projectValues.length - 1);
+      if(id == ""){
+        projectValues.push(data.ID);
+        projectNames.push(data.Project);
+        projectTerms.push(data.AutofillTerms);
+        row.setAttribute("id", data.ID);
+        
+        updateProjectRow(row, projectValues.length - 1);
+      }else{
+        i = row.rowIndex;
+        projectValues[i] = data.ID;
+        projectNames[i] = data.Project;
+        projectTerms[i] = data.AutofillTerms;
+
+        updateProjectRow(row, i);
+      }
     }
 
     editableCell = null;
@@ -469,6 +505,7 @@ function updateLogRow(row, activity){
     category.classList.add("edit");
     category.setAttribute('type', 'select');
     category.setAttribute('select-type', 'category');
+    category.setAttribute("id", activity.CategoryID)
     enableCellEdit(category);
 
     let project = row.insertCell(6);
@@ -476,6 +513,7 @@ function updateLogRow(row, activity){
     project.classList.add("edit");
     project.setAttribute('type', 'select');
     project.setAttribute('select-type', 'project');
+    project.setAttribute("id", activity.ProjectID)
     enableCellEdit(project);
 }
 
@@ -511,8 +549,8 @@ async function loadDropdowns(){
       }else{
         for (const category of data){
             categoryNames.push(category.Category);
-            categoryValues.push(category.Id);
-            categoryTerms.push(category.Terms);
+            categoryValues.push(category.ID);
+            categoryTerms.push(category.AutofillTerms);
           }
       }
 
@@ -538,9 +576,9 @@ async function loadDropdowns(){
         projectTerms.push("");
       }else{
         for (const project of data){
-            projectNames.push(project.Category);
-            projectValues.push(project.Id);
-            projectTerms.push(project.Terms);
+            projectNames.push(project.Project);
+            projectValues.push(project.ID);
+            projectTerms.push(project.AutofillTerms);
           }
       }
 }

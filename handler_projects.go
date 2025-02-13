@@ -11,7 +11,7 @@ import (
 
 func (cfg *apiConfig) handlerCreateProject(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
-		Project string `json:"project"`
+		Project string `json:"categoryProjectName"`
 	}
 	type response struct {
 		database.Project
@@ -78,8 +78,8 @@ func (cfg *apiConfig) handlerGetProjects(w http.ResponseWriter, r *http.Request)
 func (cfg *apiConfig) handlerUpdateProject(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		ID            uuid.UUID `json:"id"`
-		Project       string    `json:"project"`
-		AutofillTerms string    `json:"terms"`
+		Project       string    `json:"categoryProjectName"`
+		AutofillTerms string    `json:"categoryProjectTerms"`
 	}
 
 	token, err := auth.GetBearerToken(r.Header)

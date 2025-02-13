@@ -12,13 +12,14 @@ import (
 )
 
 const createProject = `-- name: CreateProject :one
-INSERT INTO projects (id, created_at, updated_at, project, user_id)
+INSERT INTO projects (id, created_at, updated_at, project, user_id, autofill_terms)
 VALUES (
     gen_random_uuid (),
     NOW(),
     NOW(),
     $1,
-    $2
+    $2,
+    ''
 )
 RETURNING id, created_at, updated_at, project, autofill_terms, user_id
 `

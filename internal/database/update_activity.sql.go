@@ -20,8 +20,8 @@ WITH inserted AS (
     start_time = CASE WHEN $4::TIMESTAMP = '0001-01-01 00:00:00 +0:00' THEN start_time ELSE $4::TIMESTAMP END,
     end_time = CASE WHEN $5::TIMESTAMP = '0001-01-01 00:00:00 +0:00' THEN end_time ELSE $5::TIMESTAMP END,
     updated_at = NOW(),
-    project_id = CASE WHEN $6::UUID = '00000000-0000-0000-0000-000000000000' THEN project_id ELSE $6::UUID END,
-    category_id = CASE WHEN $7::UUID = '00000000-0000-0000-0000-000000000000' THEN category_id ELSE $7::UUID END
+    project_id = CASE WHEN $6::UUID = '00000000-0000-0000-0000-000000000000' THEN NULL ELSE $6::UUID END,
+    category_id = CASE WHEN $7::UUID = '00000000-0000-0000-0000-000000000000' THEN NULL ELSE $7::UUID END
     WHERE activities.id = $1 AND activities.user_id = $2
     RETURNING id, DATE(start_time) AS "date", start_time, end_time, ROUND(EXTRACT(EPOCH FROM (end_time - start_time))/60) AS "duration", activity, category_id, project_id
 )
