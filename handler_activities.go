@@ -40,13 +40,43 @@ func (cfg *apiConfig) handlerCreateActivity(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	//TODO: Add auto project and category assignment
+	category, err := cfg.getAutoCategory(r.Context(), userID, params.Activity)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't detect category", err)
+		return
+	}
+
+	categoryID := uuid.NullUUID{}
+
+	if category == uuid.Nil {
+		categoryID.Valid = false
+	} else {
+		categoryID.Valid = true
+		categoryID.UUID = category
+	}
+
+	project, err := cfg.getAutoProject(r.Context(), userID, params.Activity)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't detect category", err)
+		return
+	}
+
+	projectID := uuid.NullUUID{}
+
+	if project == uuid.Nil {
+		projectID.Valid = false
+	} else {
+		projectID.Valid = true
+		projectID.UUID = project
+	}
 
 	activity, err := cfg.db.CreateActivity(r.Context(), database.CreateActivityParams{
-		StartTime: params.StartTime,
-		Activity:  params.Activity,
-		EndTime:   params.EndTime,
-		UserID:    userID,
+		StartTime:  params.StartTime,
+		Activity:   params.Activity,
+		EndTime:    params.EndTime,
+		UserID:     userID,
+		CategoryID: categoryID,
+		ProjectID:  projectID,
 	})
 
 	if err != nil {
