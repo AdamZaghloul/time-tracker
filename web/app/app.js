@@ -336,12 +336,6 @@ async function makeCellUneditable(cell) {
         }
     }else if (cell.getAttribute('type') == 'select'){
         dropdown = document.getElementById('input-edit');
-        /*if(dropdown.selectedIndex == -1){
-            input.remove();
-            editableCell = null;
-          
-            return;
-        }*/
 
         if(cell.getAttribute('select-type') == 'category'){
             category = dropdown.options[dropdown.selectedIndex].value;
@@ -454,6 +448,15 @@ function updateCategoryRow(row, i){
   termsRow.classList.add("edit");
   termsRow.setAttribute('type', 'text');
   enableCellEdit(termsRow);
+
+  let deleteRow = row.insertCell(2);
+  button = document.createElement('button');
+  button.innerHTML = `<i class="fa fa-trash-o"></i>`;
+  button.classList.add("delete");
+  button.addEventListener("click", function(){
+    deleteCategoryProject("category", row)
+  });
+  deleteRow.append(button);
 }
 
 function updateProjectRow(row, i){
@@ -468,6 +471,55 @@ function updateProjectRow(row, i){
   termsRow.classList.add("edit");
   termsRow.setAttribute('type', 'text');
   enableCellEdit(termsRow);
+
+  let deleteRow = row.insertCell(2);
+  button = document.createElement('button');
+  button.innerHTML = `<i class="fa fa-trash-o"></i>`;
+  button.classList.add("delete");
+  button.addEventListener("click", function(){
+    deleteCategoryProject("project", row)
+  });
+  deleteRow.append(button);
+}
+
+async function deleteCategoryProject(type, row) {
+  let endpoint = null;
+  id = row.getAttribute("id");
+
+  if(type == "category"){
+    endpoint = "/api/categories";
+  }else if(type == "project"){
+    endpoint = "/api/projects";
+  }else{
+    alert("Error: invalid type.")
+    return;
+  }
+
+  if(!confirm(`Any activities associated with this ${type} will become unassigned. Are you sure you want to delete?`)){
+    return;
+  }
+
+  try {
+    const res = await fetch(endpoint, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ id }),
+    });
+    data = await res.json();
+    if (!res.ok) {
+      throw new Error(`Failed to delete ${type}: ${data.error}`);
+    }
+  } catch (error) {
+    alert(`Error: ${error.message}`);
+    return;
+  }
+
+  row.remove();
+
+  loadDropdowns();
 }
 
 function updateLogRow(row, activity){

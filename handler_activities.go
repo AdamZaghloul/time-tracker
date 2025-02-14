@@ -129,3 +129,41 @@ func (cfg *apiConfig) handlerUpdateActivity(w http.ResponseWriter, r *http.Reque
 
 	respondWithJSON(w, http.StatusOK, activity)
 }
+
+func (cfg *apiConfig) handlerDeleteActivity(w http.ResponseWriter, r *http.Request) {
+
+	type parameters struct {
+		ID uuid.UUID `json:"id"`
+	}
+
+	token, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't find JWT", err)
+		return
+	}
+
+	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't validate JWT", err)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	params := parameters{}
+	err = decoder.Decode(&params)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters.", err)
+		return
+	}
+
+	err = cfg.db.DeleteActivity(r.Context(), database.DeleteActivityParams{
+		ID:     params.ID,
+		UserID: userID,
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't delete activity.", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, nil)
+}

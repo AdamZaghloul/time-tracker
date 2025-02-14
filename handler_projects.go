@@ -116,3 +116,52 @@ func (cfg *apiConfig) handlerUpdateProject(w http.ResponseWriter, r *http.Reques
 
 	respondWithJSON(w, http.StatusOK, project)
 }
+
+func (cfg *apiConfig) handlerDeleteProject(w http.ResponseWriter, r *http.Request) {
+
+	type parameters struct {
+		ID uuid.UUID `json:"id"`
+	}
+
+	token, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't find JWT", err)
+		return
+	}
+
+	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't validate JWT", err)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	params := parameters{}
+	err = decoder.Decode(&params)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters.", err)
+		return
+	}
+
+	projectID := uuid.NullUUID{
+		UUID:  params.ID,
+		Valid: true,
+	}
+
+	err = cfg.db.ClearProjects(r.Context(), projectID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't remove project from activities.", err)
+		return
+	}
+
+	err = cfg.db.DeleteProject(r.Context(), database.DeleteProjectParams{
+		ID:     params.ID,
+		UserID: userID,
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't delete project.", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, nil)
+}

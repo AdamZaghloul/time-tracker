@@ -14,6 +14,7 @@
     --button-bg-disabled: #494e4f;
     --button-hover: #256f7a;
     --td-hover: #2ca9bc81;
+    --delete-button-color: #494e4f00;
 }
 
 body {
@@ -147,6 +148,20 @@ button:hover {
 
 button[disabled=true], button:disabled{
     background-color: var(--button-bg-disabled)
+}
+
+button.delete {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--delete-button-color);
+    color: var(--fg-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover.delete {
+    background-color: var(--button-hover);
 }
 
 .button-container {

@@ -85,14 +85,17 @@ func main() {
 	mux.Handle("POST /api/activities", http.HandlerFunc(cfg.handlerCreateActivity))
 	mux.Handle("GET /api/activities", http.HandlerFunc(cfg.handlerGetActivities))
 	mux.Handle("PUT /api/activities", http.HandlerFunc(cfg.handlerUpdateActivity))
+	mux.Handle("DELETE /api/activities", http.HandlerFunc(cfg.handlerDeleteActivity))
 
 	mux.Handle("POST /api/categories", http.HandlerFunc(cfg.handlerCreateCategory))
 	mux.Handle("GET /api/categories", http.HandlerFunc(cfg.handlerGetCategories))
 	mux.Handle("PUT /api/categories", http.HandlerFunc(cfg.handlerUpdateCategory))
+	mux.Handle("DELETE /api/categories", http.HandlerFunc(cfg.handlerDeleteCategory))
 
 	mux.Handle("POST /api/projects", http.HandlerFunc(cfg.handlerCreateProject))
 	mux.Handle("GET /api/projects", http.HandlerFunc(cfg.handlerGetProjects))
 	mux.Handle("PUT /api/projects", http.HandlerFunc(cfg.handlerUpdateProject))
+	mux.Handle("DELETE /api/projects", http.HandlerFunc(cfg.handlerDeleteProject))
 
 	log.Printf("Serving on: http://localhost:%s\n", port)
 	log.Fatal(srv.ListenAndServe())
