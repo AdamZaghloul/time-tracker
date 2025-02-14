@@ -454,7 +454,7 @@ function updateCategoryRow(row, i){
   button.innerHTML = `<i class="fa fa-trash-o"></i>`;
   button.classList.add("delete");
   button.addEventListener("click", function(){
-    deleteCategoryProject("category", row)
+    deleteObject("category", row)
   });
   deleteRow.append(button);
 }
@@ -477,25 +477,31 @@ function updateProjectRow(row, i){
   button.innerHTML = `<i class="fa fa-trash-o"></i>`;
   button.classList.add("delete");
   button.addEventListener("click", function(){
-    deleteCategoryProject("project", row)
+    deleteObject("project", row)
   });
   deleteRow.append(button);
 }
 
-async function deleteCategoryProject(type, row) {
+async function deleteObject(type, row) {
   let endpoint = null;
+  let message = null;
   id = row.getAttribute("id");
 
   if(type == "category"){
     endpoint = "/api/categories";
+    message = `Any activities associated with this ${type} will become unassigned. Are you sure you want to delete?`;
   }else if(type == "project"){
     endpoint = "/api/projects";
+    message = `Any activities associated with this ${type} will become unassigned. Are you sure you want to delete?`;
+  }else if(type == "activity"){
+    endpoint = "/api/activities";
+    message = "Are you sure you want to delete?"
   }else{
     alert("Error: invalid type.")
     return;
   }
 
-  if(!confirm(`Any activities associated with this ${type} will become unassigned. Are you sure you want to delete?`)){
+  if(!confirm(message)){
     return;
   }
 
@@ -519,7 +525,9 @@ async function deleteCategoryProject(type, row) {
 
   row.remove();
 
-  loadDropdowns();
+  if(type == "category" || type == "project"){
+    loadDropdowns();
+  }
 }
 
 function updateLogRow(row, activity){
@@ -567,6 +575,15 @@ function updateLogRow(row, activity){
     project.setAttribute('select-type', 'project');
     project.setAttribute("id", activity.ProjectID)
     enableCellEdit(project);
+
+    let deleteRow = row.insertCell(7);
+    button = document.createElement('button');
+    button.innerHTML = `<i class="fa fa-trash-o"></i>`;
+    button.classList.add("delete");
+    button.addEventListener("click", function(){
+      deleteObject("activity", row)
+    });
+    deleteRow.append(button);
 }
 
 async function loadDropdowns(){
