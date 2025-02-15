@@ -712,5 +712,45 @@ async function importFile() {
 }
 
 async function exportFile() {
+  var data;
+
+  try {
+      const res = await fetch("/api/activities", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      data = await res.json();
+      if (!res.ok) {
+        throw new Error(`Failed to get activities: ${data.error}`);
+      }
+  } catch (error) {
+      alert(`Error: ${error.message}`);
+  }
+  
+  let csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += "Date,"
+    + "Activity" + ","
+    + "Duration" + ","
+    + "Start Time" + ","
+    + "End Time" + ","
+    + "Category" + ","
+    + "Project" + ","
+    + "\r\n";
+
+  for (const activity of data){
+    csvContent += activity.Date.split('T')[0] + ","
+      + activity.Activity + ","
+      + activity.Duration + ","
+      + activity.StartTime.split('T')[1].split('Z')[0] + ","
+      + activity.EndTime.split('T')[1].split('Z')[0].split('.')[0] + ","
+      + activity.Category.String + ","
+      + activity.Project.String + "\r\n";
+  }
+
+  var encodedUri = encodeURI(csvContent);
+  window.open(encodedUri);
   
 }
