@@ -137,11 +137,21 @@
                 <br>
                 <div style="width: 50%; float: left">
                     <h4>
-                        Import CSV
+                        Import Activities from CSV
                         <div class="tooltip">&#x1F6C8;
-                            <span class="tooltiptext">Upload activities in CSV format. Download the sample CSV for accepted format.</span>
+                            <span class="tooltiptext">Upload activities in CSV format. First row always ignored as header row. Download the sample CSV for accepted format.</span>
                         </div>
                     </h4>
+                    <ol>
+                        <li>Make activities API call a bulk call, with regular call just having one entry</li>
+                        <li>Read file, and for each line add each input to an array</li>
+                        <li>see if all of the categories and projects exist. If so, replace with IDs in array</li>
+                        <li>if not, prompt user to either add them automatically or cancel</li>
+                        <li>add any new categories and projects, collecting their IDs and replacing them in arrays, refreshing dropdowns</li>
+                        <li>stringify the new body of all activity objects</li>
+                        <li>api call to add the new activities</li>
+                        <li>prompt user that the process is complete</li>
+                    </ol>
                     <button onclick="importFile()" type="button">Import</button>
                     <br>
                     <br>
@@ -149,7 +159,7 @@
                 </div>
                 <div style="width: 50%; float: right">
                     <h4>
-                        Export CSV
+                        Export All Activities to CSV
                     </h4>
                     <button onclick="exportFile()" type="button">Export</button>
                 </div>

@@ -704,7 +704,9 @@ async function refreshSettings(){
 }
 
 async function downloadSample() {
-  
+  var link = document.createElement("a");
+  link.href = "/files/sample.csv";
+  link.click();
 }
 
 async function importFile() {
