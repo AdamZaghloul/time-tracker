@@ -14,6 +14,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.location='/';
     }
 
+    var url = document.location.href;
+    var urlSections = url.split("#");
+    var page = urlSections[1];
+
+    if(page == "track" || page == "log" || page == "settings" || page == "report"){
+      nav(page);
+    }
+
     const startTime = localStorage.getItem("start_time");
     const activity = localStorage.getItem("activity");
     const overrideDuration = localStorage.getItem("override_duration");
@@ -152,6 +160,8 @@ function navRemove(){
 function nav(page){
 
     navRemove();
+
+    document.location.href = "#" + page;
 
     let section = page + "-section";
     let link = page + "-link"
