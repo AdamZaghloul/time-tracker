@@ -83,6 +83,7 @@ func main() {
 	//mux.Handle("POST /api/revoke", http.HandlerFunc(cfg.RevokeHandler))
 
 	mux.Handle("POST /api/activities", http.HandlerFunc(cfg.handlerCreateActivity))
+	mux.Handle("POST /api/bulk/activities", http.HandlerFunc(cfg.handlerCreateBulkActivities))
 	mux.Handle("GET /api/activities", http.HandlerFunc(cfg.handlerGetActivities))
 	mux.Handle("PUT /api/activities", http.HandlerFunc(cfg.handlerUpdateActivity))
 	mux.Handle("DELETE /api/activities", http.HandlerFunc(cfg.handlerDeleteActivity))

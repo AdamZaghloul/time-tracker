@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -87,6 +88,73 @@ func (cfg *apiConfig) handlerCreateActivity(w http.ResponseWriter, r *http.Reque
 	respondWithJSON(w, http.StatusOK, response{
 		activity,
 	})
+}
+
+func (cfg *apiConfig) handlerCreateBulkActivities(w http.ResponseWriter, r *http.Request) {
+	type parameters struct {
+		StartTime time.Time `json:"startTime"`
+		Activity  string    `json:"activity"`
+		EndTime   time.Time `json:"endTime"`
+		Category  uuid.UUID `json:"category"`
+		Project   uuid.UUID `json:"project"`
+	}
+
+	token, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't find JWT", err)
+		return
+	}
+
+	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't validate JWT", err)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	params := []parameters{}
+	err = decoder.Decode(&params)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters.", err)
+		return
+	}
+
+	for i := range params {
+
+		categoryID := uuid.NullUUID{}
+
+		if params[i].Category == uuid.Nil {
+			categoryID.Valid = false
+		} else {
+			categoryID.Valid = true
+			categoryID.UUID = params[i].Category
+		}
+
+		projectID := uuid.NullUUID{}
+
+		if params[i].Project == uuid.Nil {
+			projectID.Valid = false
+		} else {
+			projectID.Valid = true
+			projectID.UUID = params[i].Project
+		}
+
+		_, err := cfg.db.CreateActivity(r.Context(), database.CreateActivityParams{
+			StartTime:  params[i].StartTime,
+			Activity:   params[i].Activity,
+			EndTime:    params[i].EndTime,
+			UserID:     userID,
+			CategoryID: categoryID,
+			ProjectID:  projectID,
+		})
+
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Unable to create activity: %s. This and all following activities will not be imported.", params[i].Activity), err)
+			return
+		}
+	}
+
+	respondWithJSON(w, http.StatusOK, nil)
 }
 
 func (cfg *apiConfig) handlerGetActivities(w http.ResponseWriter, r *http.Request) {

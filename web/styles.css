@@ -170,6 +170,20 @@ button:hover.delete {
     gap: 10px;
 }
 
+input[type="file"]::file-selector-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--button-bg);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background-color: var(--button-hover);
+}
+
 #auth-section {
     max-width: 600px;
     margin: 0 auto;

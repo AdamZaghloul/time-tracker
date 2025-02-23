@@ -160,7 +160,7 @@ function nav(page){
     document.getElementById(link).classList.add("selected");
 
     if(page == 'log'){
-        refreshLog();
+      refreshLog();
     }else if(page == 'settings'){
       refreshSettings();
     }
@@ -675,8 +675,9 @@ async function refreshSettings(){
   await loadDropdowns();
 
   const categoryTable = document.getElementById("categoryTableBody");
-  for (var i = 0; i < categoryTable.rows.length-1; i++){
+  for (i = 0; i < categoryTable.rows.length-1; i++){
     categoryTable.deleteRow(i);
+    i--;
   }
 
   for (var i = 0; i < categoryNames.length; i++){
@@ -691,6 +692,7 @@ async function refreshSettings(){
   const projectTable = document.getElementById("projectTableBody");
   for (var i = 0; i < projectTable.rows.length-1; i++){
     projectTable.deleteRow(i);
+    i--;
   }
 
   for (var i = 0; i < projectNames.length; i++){
@@ -710,7 +712,171 @@ async function downloadSample() {
 }
 
 async function importFile() {
-  
+
+  var file = document.getElementById("file-input").files[0];
+
+  if (!file){
+    alert("Please select a file.");
+    return;
+  }
+
+  var reader = new FileReader();
+
+  reader.onload = function (e){
+    processImport(this.result);
+  };
+
+  reader.readAsText(file);
+}
+
+async function processImport(text){
+  var startTime;
+  var endTime;
+  var activity;
+  var category;
+  var project;
+  var found = false;
+  var data = null;
+  var finalJSON = "[";
+
+  var lines = text.split("\n");
+  headerLine = lines[0].split(",");
+
+  if (headerLine.length != 5){
+    alert("Invalid number of input columns. Please refer to sample for required format.")
+    return;
+  }
+
+  for(i = 1; i < lines.length; i++){
+    if(lines[i] == ""){
+      continue;
+    }
+
+    fields = lines[i].split(",");
+    
+    category = "00000000-0000-0000-0000-000000000000";
+    project = "00000000-0000-0000-0000-000000000000";
+    startTime = new Date(fields[0]);
+    endTime = new Date(fields[1]);
+    startTime = new Date(startTime.getTime() - (startTime.getTimezoneOffset() * 60000));
+    endTime = new Date(endTime.getTime() - (endTime.getTimezoneOffset() * 60000));
+
+    activity = fields[2];
+    categoryCheck = fields[3].trim();
+    projectCheck = fields[4].trim();
+
+    for(j = 0; j < categoryNames.length; j++){
+      if(categoryNames[j] == categoryCheck){
+        category = categoryValues[j];
+        found = true;
+        break;
+      }
+    }
+
+    if(!found && categoryCheck != ""){
+      if(confirm(`The category "${categoryCheck}" does not exist. Press OK to add it, or Cancel to make all instances of "${categoryCheck}" blank.`)){
+        try {
+          var categoryProjectName = categoryCheck;
+          const res = await fetch("/api/categories", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify({ categoryProjectName }),
+          });
+          data = await res.json();
+          if (!res.ok) {
+            throw new Error(`Failed to add category: ${data.error}`);
+          }
+        } catch (error) {
+          alert(`Error: ${error.message}`);
+          return;
+        }
+
+        categoryValues.push(data.ID);
+        categoryNames.push(data.Category);
+        categoryTerms.push("");
+        category = data.ID;
+
+      }else{
+        categoryNames.push(categoryCheck);
+        categoryValues.push("00000000-0000-0000-0000-000000000000");
+        categoryTerms.push("");
+        category = "00000000-0000-0000-0000-000000000000";
+      }
+    }
+
+    found = false;
+
+    for(j = 0; j < projectNames.length; j++){
+      if(projectNames[j] == projectCheck){
+        project = projectValues[j];
+        found = true;
+        break;
+      }
+    }
+
+    if(!found && projectCheck != ""){
+      if(confirm(`The project "${projectCheck}" does not exist. Press OK to add it, or Cancel to make all instances of "${projectCheck}" blank.`)){
+        try {
+          var categoryProjectName = projectCheck;
+          const res = await fetch("/api/projects", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify({ categoryProjectName }),
+          });
+          data = await res.json();
+          if (!res.ok) {
+            throw new Error(`Failed to add project: ${data.error}`);
+          }
+        } catch (error) {
+          alert(`Error: ${error.message}`);
+          return;
+        }
+
+        projectValues.push(data.ID);
+        projectNames.push(data.Category);
+        projectTerms.push("");
+        project = data.ID;
+      }else{
+        projectNames.push(projectCheck);
+        projectValues.push("00000000-0000-0000-0000-000000000000");
+        projectTerms.push("");
+        project = "00000000-0000-0000-0000-000000000000";
+      }
+    }
+
+    found = false;
+    var json = JSON.stringify({ startTime, endTime, activity, category, project });
+    finalJSON += json + ", ";
+  }
+
+  finalJSON = finalJSON.substring(0, finalJSON.length - 2) + "]";
+
+  try {
+    const res = await fetch("/api/bulk/activities", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: finalJSON,
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`Failed to import activities: ${data.error}`);
+    }
+
+    alert("Import completed successfully.")
+    document.getElementById('file-input').value = null;
+    nav("log");
+  } catch (error) {
+    alert(`Error: ${error.message}`);
+  }
 }
 
 async function exportFile() {
