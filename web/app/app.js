@@ -674,7 +674,10 @@ async function refreshSettings(){
   
   await loadDropdowns();
 
+
   const categoryTable = document.getElementById("categoryTableBody");
+  const projectTable = document.getElementById("projectTableBody");
+
   for (i = 0; i < categoryTable.rows.length-1; i++){
     categoryTable.deleteRow(i);
     i--;
@@ -689,7 +692,6 @@ async function refreshSettings(){
     }
   }
 
-  const projectTable = document.getElementById("projectTableBody");
   for (var i = 0; i < projectTable.rows.length-1; i++){
     projectTable.deleteRow(i);
     i--;
