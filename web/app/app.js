@@ -18,9 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     var urlSections = url.split("#");
     var page = urlSections[1];
 
-    if(page == "track" || page == "log" || page == "settings" || page == "report"){
-      nav(page);
-    }
+    nav(page);
 
     const startTime = localStorage.getItem("start_time");
     const activity = localStorage.getItem("activity");
@@ -159,12 +157,20 @@ function navRemove(){
 
 function nav(page){
 
-    navRemove();
-
     document.location.href = "#" + page;
 
     let section = page + "-section";
     let link = page + "-link"
+
+    if(!document.getElementById(section)){
+      return;
+    }
+
+    if(!document.getElementById(link)){
+      return;
+    }
+
+    navRemove();
     
     document.getElementById(section).style.display = "block";
     document.getElementById(link).classList.add("selected");
