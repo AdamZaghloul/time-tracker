@@ -7,48 +7,28 @@ package database
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const getReportYears = `-- name: GetReportYears :many
-DO $$ 
-DECLARE 
-    cols TEXT;
-    query TEXT;
-BEGIN
-    -- Generate column names dynamically
-    SELECT string_agg(DISTINCT quote_ident(EXTRACT(YEAR FROM a.start_time) AS "year"::text) || ' INT', ', ') 
-    INTO cols
-    FROM activities WHERE user_id = $1;
-
-    -- Construct the crosstab query dynamically
-    query := format(
-        'SELECT * FROM crosstab(
-            ''SELECT category_id, EXTRACT(YEAR FROM a.start_time) AS "year", SUM(ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time))/60)) AS "duration" FROM activities WHERE user_id = $1 GROUP BY category_id, "year" ORDER BY category_id, "year"'',
-            ''SELECT DISTINCT EXTRACT(YEAR FROM a.start_time) AS "year" FROM activities WHERE user_id = $1 ORDER BY "year"''
-        ) AS ct (store TEXT, %s);', cols
-    );
-
-    -- Execute the query
-    EXECUTE query;
-END $$
+SELECT get_report_years FROM get_report_years($1)
 `
 
-type GetReportYearsRow struct {
-}
-
-func (q *Queries) GetReportYears(ctx context.Context) ([]GetReportYearsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getReportYears)
+// Test UUID 4f0081b0-2e30-47c7-836a-0bc06f7baaab
+func (q *Queries) GetReportYears(ctx context.Context, inputUserID uuid.UUID) ([]interface{}, error) {
+	rows, err := q.db.QueryContext(ctx, getReportYears, inputUserID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetReportYearsRow
+	var items []interface{}
 	for rows.Next() {
-		var i GetReportYearsRow
-		if err := rows.Scan(); err != nil {
+		var get_report_years interface{}
+		if err := rows.Scan(&get_report_years); err != nil {
 			return nil, err
 		}
-		items = append(items, i)
+		items = append(items, get_report_years)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

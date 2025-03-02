@@ -7,28 +7,28 @@ package database
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
-const getReportYearsCategories = `-- name: GetReportYearsCategories :many
-DROP FUNCTION get_activity_summary(uuid)
+const getReportYears = `-- name: GetReportYears :many
+SELECT get_report_years FROM get_report_years($1)
 `
 
-type GetReportYearsCategoriesRow struct {
-}
-
-func (q *Queries) GetReportYearsCategories(ctx context.Context) ([]GetReportYearsCategoriesRow, error) {
-	rows, err := q.db.QueryContext(ctx, getReportYearsCategories)
+// Test UUID 4f0081b0-2e30-47c7-836a-0bc06f7baaab
+func (q *Queries) GetReportYears(ctx context.Context, inputUserID uuid.UUID) ([]interface{}, error) {
+	rows, err := q.db.QueryContext(ctx, getReportYears, inputUserID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetReportYearsCategoriesRow
+	var items []interface{}
 	for rows.Next() {
-		var i GetReportYearsCategoriesRow
-		if err := rows.Scan(); err != nil {
+		var get_report_years interface{}
+		if err := rows.Scan(&get_report_years); err != nil {
 			return nil, err
 		}
-		items = append(items, i)
+		items = append(items, get_report_years)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err
