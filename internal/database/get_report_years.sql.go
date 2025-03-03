@@ -7,28 +7,47 @@ package database
 
 import (
 	"context"
+	"encoding/json"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 const getReportYears = `-- name: GetReportYears :many
-SELECT get_report_years FROM get_report_years($1)
+SELECT 
+    (r).return_year::INT as year,
+    (r).avg_start_time::TIME as start_time,
+    (r).category_data::JSONB as category_data,
+    (r).project_data::JSONB as project_data 
+FROM get_report_years($1) AS r
 `
 
+type GetReportYearsRow struct {
+	Year         int32
+	StartTime    time.Time
+	CategoryData json.RawMessage
+	ProjectData  json.RawMessage
+}
+
 // Test UUID 4f0081b0-2e30-47c7-836a-0bc06f7baaab
-func (q *Queries) GetReportYears(ctx context.Context, inputUserID uuid.UUID) ([]interface{}, error) {
+func (q *Queries) GetReportYears(ctx context.Context, inputUserID uuid.UUID) ([]GetReportYearsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getReportYears, inputUserID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []interface{}
+	var items []GetReportYearsRow
 	for rows.Next() {
-		var get_report_years interface{}
-		if err := rows.Scan(&get_report_years); err != nil {
+		var i GetReportYearsRow
+		if err := rows.Scan(
+			&i.Year,
+			&i.StartTime,
+			&i.CategoryData,
+			&i.ProjectData,
+		); err != nil {
 			return nil, err
 		}
-		items = append(items, get_report_years)
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

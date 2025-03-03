@@ -146,12 +146,12 @@ function storeProgress(key){
 function navRemove(){
     document.getElementById("track-section").style.display = "none";
     document.getElementById("log-section").style.display = "none";
-    //document.getElementById("report-section").style.display = "none";
+    document.getElementById("report-section").style.display = "none";
     document.getElementById("settings-section").style.display = "none";
 
     document.getElementById("track-link").classList.remove("selected");
     document.getElementById("log-link").classList.remove("selected");
-    //document.getElementById("report-link").classList.remove("selected");
+    document.getElementById("report-link").classList.remove("selected");
     document.getElementById("settings-link").classList.remove("selected");
 }
 
@@ -179,6 +179,8 @@ function nav(page){
       refreshLog();
     }else if(page == 'settings'){
       refreshSettings();
+    }else if(page == 'report'){
+      refreshReport();
     }
    
 }
@@ -939,4 +941,71 @@ async function exportFile() {
   var encodedUri = encodeURI(csvContent);
   window.open(encodedUri);
   
+}
+
+function allYearsReport(){
+  alert("all years report");
+}
+
+async function refreshReport(){
+  var data;
+
+  try {
+      const res = await fetch("/api/reports/years", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      data = await res.json();
+      if (!res.ok) {
+        throw new Error(`Failed to get years report: ${data.error}`);
+      }
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+    }
+    
+    const table = document.getElementById("reportTableBody");
+    const tableHead = document.getElementById("reportTableHead");
+    table.innerHTML = '';
+
+    const colsToDelete = document.getElementsByClassName("category-or-project-col");
+    for(var i = 0; i < colsToDelete.length; i++){
+      colsToDelete[i].remove();
+    }
+
+    await loadDropdowns();
+
+    let numCats = categoryNames.length;
+    let numProjs = projectNames.length;
+
+    for(var i = 0; i < numCats; i++){
+      let col = tableHead.insertCell(i);
+      let th = document.createElement('th');
+      col.replaceWith(th);
+      th.innerHTML = categoryNames[i];
+      th.setAttribute('id', categoryValues[i]);
+    }
+
+    for(var i = 0; i < numProjs; i++){
+      let col = tableHead.insertCell(numCats+1+i);
+      let th = document.createElement('th');
+      col.replaceWith(th);
+      th.innerHTML = projectNames[i];
+      th.setAttribute('id', projectValues[i]);
+    }
+
+    const catLabel = document.getElementById("category-label");
+    const projLabel = document.getElementById("project-label");
+
+    catLabel.setAttribute('colspan', numCats+1);
+    projLabel.setAttribute('colspan', numProjs+1);
+
+    for (const year of data){
+      let row = table.insertRow();
+      row.setAttribute('id', year.Year);
+
+      //updateLogRow(row, activity);
+    }
 }

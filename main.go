@@ -98,6 +98,8 @@ func main() {
 	mux.Handle("PUT /api/projects", http.HandlerFunc(cfg.handlerUpdateProject))
 	mux.Handle("DELETE /api/projects", http.HandlerFunc(cfg.handlerDeleteProject))
 
+	mux.Handle("GET /api/reports/years", http.HandlerFunc(cfg.handlerGetReportYears))
+
 	log.Printf("Serving on: http://localhost:%s\n", port)
 	log.Fatal(srv.ListenAndServe())
 }

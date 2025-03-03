@@ -1,8 +1,9 @@
 -- +goose Up
+-- +goose StatementBegin
 CREATE OR REPLACE FUNCTION get_report_years(input_user_id UUID)
-RETURNS TABLE(return_year INT, avg_start_time TIME, category_data JSONB, project_data JSONB) AS $$ 
-BEGIN 
-    RETURN QUERY 
+RETURNS TABLE(return_year INT, avg_start_time TIME, category_data JSONB, project_data JSONB) AS $$
+BEGIN
+    RETURN QUERY
     WITH category_agg AS (
         SELECT 
             EXTRACT(YEAR FROM a.start_time)::INT AS year,  
@@ -48,9 +49,10 @@ BEGIN
     LEFT JOIN avg_start_time_agg avg
     ON cat.year = avg.year OR proj.year = avg.year
     GROUP BY COALESCE(cat.year, proj.year), avg.avg_start_time
-    ORDER BY return_year DESC; 
+    ORDER BY return_year DESC;
 END;
 $$ LANGUAGE plpgsql;
+-- +goose StatementEnd
 
 -- +goose Down
 DROP FUNCTION get_report_years(uuid);

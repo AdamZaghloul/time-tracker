@@ -20,23 +20,11 @@ func (cfg *apiConfig) handlerGetReportYears(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = cfg.db.GetReportYearsCategories1(r.Context())
+	result, err := cfg.db.GetReportYears(r.Context(), userID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't get report step 1.", err)
+		respondWithError(w, http.StatusInternalServerError, "Couldn't get years result.", err)
 		return
 	}
 
-	err = cfg.db.GetReportYearsCategories2(r.Context())
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't get report step 2.", err)
-		return
-	}
-
-	categoryData, err := cfg.db.GetReportYearsCategories3(r.Context(), userID)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't get report step 3.", err)
-		return
-	}
-
-	respondWithJSON(w, http.StatusOK, categoryData)
+	respondWithJSON(w, http.StatusOK, result)
 }
