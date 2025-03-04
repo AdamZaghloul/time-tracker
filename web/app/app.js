@@ -565,14 +565,14 @@ function updateLogRow(row, activity){
     duration.innerHTML = activity.Duration;
 
     let startTime = row.insertCell(3);
-    startTime.innerHTML = activity.StartTime.split('T')[1].split('Z')[0];
+    startTime.innerHTML = activity.StartTime.split('T')[1].split('Z')[0].split(':').slice(0,-1).join(':');
     startTime.classList.add("edit");
     startTime.setAttribute('type', 'time');
     startTime.setAttribute('time-type', 'start');
     enableCellEdit(startTime);
 
     let endTime = row.insertCell(4);
-    endTime.innerHTML = activity.EndTime.split('T')[1].split('Z')[0].split('.')[0];
+    endTime.innerHTML = activity.EndTime.split('T')[1].split('Z')[0].split('.')[0].split(':').slice(0,-1).join(':');
     endTime.classList.add("edit");
     endTime.setAttribute('type', 'time');
     endTime.setAttribute('time-type', 'end');
@@ -1006,6 +1006,50 @@ async function refreshReport(){
       let row = table.insertRow();
       row.setAttribute('id', year.Year);
 
-      //updateLogRow(row, activity);
+      let date = row.insertCell(0);
+      date.innerHTML = year.Year;
+
+      let startTime = row.insertCell(1);
+      startTime.innerHTML = year.StartTime.split('T')[1].split('Z')[0].split(':').slice(0,-1).join(':');
+
+      let totalCol = row.insertCell(2);
+      let total = 0;
+
+      for(var i = 0; i < numCats; i++){
+        let cell = row.insertCell(3 + i);
+        if(!year.CategoryData[categoryValues[i]]){
+          cell.innerHTML = 0;
+        }else{
+          cell.innerHTML = year.CategoryData[categoryValues[i]];
+          total += Number(year.CategoryData[categoryValues[i]]);
+        }
+      }
+
+      let cell = row.insertCell(3 + numCats);
+      if(!year.CategoryData["null"]){
+        cell.innerHTML = 0;
+      }else{
+        cell.innerHTML = year.CategoryData["null"];
+        total += Number(year.CategoryData["null"]);
+      }
+  
+      for(var i = 0; i < numProjs; i++){
+        let cell = row.insertCell(3 + numCats + 1 + i);
+        if(!year.ProjectData[projectValues[i]]){
+          cell.innerHTML = 0;
+        }else{
+          cell.innerHTML = year.ProjectData[projectValues[i]];
+        }
+      }
+
+      cell = row.insertCell(3 + numCats + 1 + numProjs);
+      if(!year.ProjectData["null"]){
+        cell.innerHTML = 0;
+      }else{
+        cell.innerHTML = year.ProjectData["null"];
+      }
+      
+      //alert(total/60);
+      totalCol.innerHTML = total;
     }
 }
