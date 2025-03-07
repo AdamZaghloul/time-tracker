@@ -503,9 +503,9 @@ function updateCategoryRow(row, i){
   let deleteRow = row.insertCell(2);
   button = document.createElement('button');
   button.innerHTML = `<i class="fa fa-trash-o"></i>`;
-  button.classList.add("delete");
+  button.classList.add("subtle");
   button.addEventListener("click", function(){
-    deleteObject("category", row)
+    deleteObject("category", row);
   });
   deleteRow.append(button);
 }
@@ -526,9 +526,9 @@ function updateProjectRow(row, i){
   let deleteRow = row.insertCell(2);
   button = document.createElement('button');
   button.innerHTML = `<i class="fa fa-trash-o"></i>`;
-  button.classList.add("delete");
+  button.classList.add("subtle");
   button.addEventListener("click", function(){
-    deleteObject("project", row)
+    deleteObject("project", row);
   });
   deleteRow.append(button);
 }
@@ -639,9 +639,9 @@ function updateLogRow(row, activity){
     let deleteRow = row.insertCell(7);
     button = document.createElement('button');
     button.innerHTML = `<i class="fa fa-trash-o"></i>`;
-    button.classList.add("delete");
+    button.classList.add("subtle");
     button.addEventListener("click", function(){
-      deleteObject("activity", row)
+      deleteObject("activity", row);
     });
     deleteRow.append(button);
 }
@@ -1103,7 +1103,6 @@ async function refreshReport(){
       date.innerHTML = year.Year;
 
       let startTime = row.insertCell(1);
-      //startTime.innerHTML = year.StartTime.split('T')[1].split('Z')[0].split(':').slice(0,-1).join(':');
       startTime.innerHTML = year.StartTime;
 
       let totalCol = row.insertCell(2);
@@ -1143,7 +1142,19 @@ async function refreshReport(){
         cell.innerHTML = year.ProjectData["null"];
       }
       
-      //alert(total/60);
       totalCol.innerHTML = total;
+
+      cell = row.insertCell(3 + numCats + 1 + numProjs+1);
+      let button = document.createElement('button');
+      button.innerHTML = `<i class="fa fa-bar-chart"></i>`;
+      button.classList.add("subtle");
+      button.addEventListener("click", function(){
+        drillDownReport("year", row);
+      });
+      cell.append(button);
     }
+}
+
+function drillDownReport(type, row){
+  alert(`${type} drilldown`);
 }
