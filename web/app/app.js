@@ -82,14 +82,21 @@ async function submitActivity() {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(`Failed to create activity: ${data.error}`);
+        const err = new Error(`Failed to create activity: ${data.error}`);
+        err.code = res.status;
+        throw err;
       }
       
       resetTrackForm(data.Activity, endTime);
 
       console.log("Activity logged!")
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      if(error.code == '401'){
+        alert(error.code);
+        logout();
+      }else{
+        alert(`Error: ${error.message}`);
+      }
     }
   }
 
@@ -198,10 +205,17 @@ async function refreshLog(){
         });
         data = await res.json();
         if (!res.ok) {
-          throw new Error(`Failed to get activities: ${data.error}`);
+          const err = new Error(`Failed to get activities: ${data.error}`);
+          err.code = res.status;
+          throw err;
         }
       } catch (error) {
-        alert(`Error: ${error.message}`);
+        if(error.code == '401'){
+          alert(error.code);
+          logout();
+        }else{
+          alert(`Error: ${error.message}`);
+        }
       }
       
       const table = document.getElementById("logTableBody");
@@ -402,14 +416,21 @@ async function makeCellUneditable(cell) {
         });
         data = await res.json();
         if (!res.ok) {
-          throw new Error(`Failed to update ${table}: ${data.error}`);
+          const err = new Error(`Failed to update ${table}: ${data.error}`);
+          err.code = res.status;
+          throw err;
         }
     } catch (error) {
+      if(error.code == '401'){
+        alert(error.code);
+        logout();
+      }else{
         alert(`Error: ${error.message}`);
         input.remove();
         editableCell = null;
           
         return;
+      }
     }
     
     row = cell.parentNode;
@@ -534,11 +555,18 @@ async function deleteObject(type, row) {
     });
     data = await res.json();
     if (!res.ok) {
-      throw new Error(`Failed to delete ${type}: ${data.error}`);
+      const err = new Error(`Failed to delete ${type}: ${data.error}`);
+      err.code = res.status;
+      throw err;
     }
   } catch (error) {
-    alert(`Error: ${error.message}`);
-    return;
+    if(error.code == '401'){
+      alert(error.code);
+      logout();
+    }else{
+      alert(`Error: ${error.message}`);
+      return;
+    }
   }
 
   row.remove();
@@ -623,10 +651,17 @@ async function loadDropdowns(){
         });
         data = await res.json();
         if (!res.ok) {
-          throw new Error(`Failed to get categories: ${data.error}`);
+          const err = new Error(`Failed to get categories: ${data.error}`);
+          err.code = res.status;
+          throw err;
         }
       } catch (error) {
-        alert(`Error: ${error.message}`);
+        if(error.code == '401'){
+          alert(error.code);
+          logout();
+        }else{
+          alert(`Error: ${error.message}`);
+        }
       }
 
       if (data == null){
@@ -651,10 +686,17 @@ async function loadDropdowns(){
         });
         data = await res.json();
         if (!res.ok) {
-          throw new Error(`Failed to get projects: ${data.error}`);
+          const err = new Error(`Failed to get projects: ${data.error}`);
+          err.code = res.status;
+          throw err;
         }
       } catch (error) {
-        alert(`Error: ${error.message}`);
+        if(error.code == '401'){
+          alert(error.code);
+          logout();
+        }else{
+          alert(`Error: ${error.message}`);
+        }
       }
 
       if (data == null){
@@ -807,11 +849,18 @@ async function processImport(text){
           });
           data = await res.json();
           if (!res.ok) {
-            throw new Error(`Failed to add category: ${data.error}`);
+            const err = new Error(`Failed to add category: ${data.error}`);
+            err.code = res.status;
+            throw err;
           }
         } catch (error) {
-          alert(`Error: ${error.message}`);
-          return;
+          if(error.code == '401'){
+            alert(error.code);
+            logout();
+          }else{
+            alert(`Error: ${error.message}`);
+            return;
+          }
         }
 
         categoryValues.push(data.ID);
@@ -851,11 +900,18 @@ async function processImport(text){
           });
           data = await res.json();
           if (!res.ok) {
-            throw new Error(`Failed to add project: ${data.error}`);
+            const err = new Error(`Failed to add project: ${data.error}`);
+            err.code = res.status;
+            throw err;
           }
         } catch (error) {
-          alert(`Error: ${error.message}`);
-          return;
+          if(error.code == '401'){
+            alert(error.code);
+            logout();
+          }else{
+            alert(`Error: ${error.message}`);
+            return;
+          }
         }
 
         projectValues.push(data.ID);
@@ -888,14 +944,21 @@ async function processImport(text){
     });
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(`Failed to import activities: ${data.error}`);
+      const err = new Error(`Failed to import activities: ${data.error}`);
+      err.code = res.status;
+      throw err;
     }
 
     alert("Import completed successfully.")
     document.getElementById('file-input').value = null;
     nav("log");
   } catch (error) {
-    alert(`Error: ${error.message}`);
+    if(error.code == '401'){
+      alert(error.code);
+      logout();
+    }else{
+      alert(`Error: ${error.message}`);
+    }
   }
 }
 
@@ -912,10 +975,17 @@ async function exportFile() {
       });
       data = await res.json();
       if (!res.ok) {
-        throw new Error(`Failed to get activities: ${data.error}`);
+        const err = new Error(`Failed to get activities: ${data.error}`);
+        err.code = res.status;
+        throw err;
       }
   } catch (error) {
+    if(error.code == '401'){
+      alert(error.code);
+      logout();
+    }else{
       alert(`Error: ${error.message}`);
+    }
   }
   
   let csvContent = "data:text/csv;charset=utf-8,";
@@ -960,10 +1030,17 @@ async function refreshReport(){
       });
       data = await res.json();
       if (!res.ok) {
-        throw new Error(`Failed to get years report: ${data.error}`);
+        const err = new Error(`Failed to get years report: ${data.error}`);
+        err.code = res.status;
+        throw err;
       }
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      if(error.code == '401'){
+        alert(error.code);
+        logout();
+      }else{
+        alert(`Error: ${error.message}`);
+      }
     }
     
     const table = document.getElementById("reportTableBody");
@@ -980,12 +1057,18 @@ async function refreshReport(){
     let numCats = categoryNames.length;
     let numProjs = projectNames.length;
 
+    var colElems = document.getElementsByClassName("report-col");
+
+    for(var i = 0; i < colElems.length; i++){
+      colElems[i].remove();
+    }
+
     for(var i = 0; i < numCats; i++){
       let col = tableHead.insertCell(i);
       let th = document.createElement('th');
       col.replaceWith(th);
       th.innerHTML = categoryNames[i];
-      th.setAttribute('id', categoryValues[i]);
+      th.classList.add("report-col");
     }
 
     for(var i = 0; i < numProjs; i++){
@@ -993,7 +1076,7 @@ async function refreshReport(){
       let th = document.createElement('th');
       col.replaceWith(th);
       th.innerHTML = projectNames[i];
-      th.setAttribute('id', projectValues[i]);
+      th.classList.add("report-col");
     }
 
     const catLabel = document.getElementById("category-label");
