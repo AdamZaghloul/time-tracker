@@ -8,7 +8,6 @@ package database
 import (
 	"context"
 	"encoding/json"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -16,7 +15,7 @@ import (
 const getReportYears = `-- name: GetReportYears :many
 SELECT 
     (r).return_year::INT as year,
-    (r).avg_start_time::TIME as start_time,
+    (r).avg_start_time as start_time,
     (r).category_data::JSONB as category_data,
     (r).project_data::JSONB as project_data 
 FROM get_report_years($1) AS r
@@ -24,7 +23,7 @@ FROM get_report_years($1) AS r
 
 type GetReportYearsRow struct {
 	Year         int32
-	StartTime    time.Time
+	StartTime    interface{}
 	CategoryData json.RawMessage
 	ProjectData  json.RawMessage
 }

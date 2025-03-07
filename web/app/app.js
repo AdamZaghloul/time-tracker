@@ -1061,11 +1061,6 @@ async function refreshReport(){
     const tableHead = document.getElementById("reportTableHead");
     table.innerHTML = '';
 
-    const colsToDelete = document.getElementsByClassName("category-or-project-col");
-    for(var i = 0; i < colsToDelete.length; i++){
-      colsToDelete[i].remove();
-    }
-
     await loadDropdowns();
 
     let numCats = categoryNames.length;
@@ -1075,6 +1070,7 @@ async function refreshReport(){
 
     for(var i = 0; i < colElems.length; i++){
       colElems[i].remove();
+      i--;
     }
 
     for(var i = 0; i < numCats; i++){
@@ -1107,7 +1103,8 @@ async function refreshReport(){
       date.innerHTML = year.Year;
 
       let startTime = row.insertCell(1);
-      startTime.innerHTML = year.StartTime.split('T')[1].split('Z')[0].split(':').slice(0,-1).join(':');
+      //startTime.innerHTML = year.StartTime.split('T')[1].split('Z')[0].split(':').slice(0,-1).join(':');
+      startTime.innerHTML = year.StartTime;
 
       let totalCol = row.insertCell(2);
       let total = 0;
