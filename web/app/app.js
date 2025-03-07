@@ -319,6 +319,18 @@ async function makeCellUneditable(cell) {
     let apiMethod = null;
     let id = cell.parentNode.getAttribute("id");
 
+    if(table == "logTableBody"){
+      category = document.getElementsByClassName("category-" + id)[0].getAttribute("id");
+      if(category == "null"){
+        category = null;
+      }
+
+      project = document.getElementsByClassName("project-" + id)[0].getAttribute("id");
+      if(project == "null"){
+        project = null;
+      }
+    }
+
     if(cell.getAttribute('type') == 'date'){
         var dateArray = val.split("-");
         var year = dateArray[0];
@@ -609,6 +621,7 @@ function updateLogRow(row, activity){
     let category = row.insertCell(5);
     category.innerHTML = activity.Category.String;
     category.classList.add("edit");
+    category.classList.add("category-" + activity.ID);
     category.setAttribute('type', 'select');
     category.setAttribute('select-type', 'category');
     category.setAttribute("id", activity.CategoryID)
@@ -617,6 +630,7 @@ function updateLogRow(row, activity){
     let project = row.insertCell(6);
     project.innerHTML = activity.Project.String;
     project.classList.add("edit");
+    project.classList.add("project-" + activity.ID);
     project.setAttribute('type', 'select');
     project.setAttribute('select-type', 'project');
     project.setAttribute("id", activity.ProjectID)
