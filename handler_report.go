@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/AdamZaghloul/time-tracker/internal/auth"
 	"github.com/AdamZaghloul/time-tracker/internal/database"
@@ -33,10 +33,6 @@ func (cfg *apiConfig) handlerGetReportYears(w http.ResponseWriter, r *http.Reque
 
 func (cfg *apiConfig) handlerGetReportMonths(w http.ResponseWriter, r *http.Request) {
 
-	type parameters struct {
-		Year int32 `json:"year"`
-	}
-
 	token, err := auth.GetBearerToken(r.Header)
 	if err != nil {
 		respondWithError(w, http.StatusUnauthorized, "Couldn't find JWT", err)
@@ -49,17 +45,17 @@ func (cfg *apiConfig) handlerGetReportMonths(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	decoder := json.NewDecoder(r.Body)
-	params := parameters{}
-	err = decoder.Decode(&params)
+	yearString := r.PathValue("year")
+
+	year, err := strconv.Atoi(yearString)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters.", err)
+		respondWithError(w, http.StatusUnauthorized, "Couldn't decode year", err)
 		return
 	}
 
 	result, err := cfg.db.GetReportMonths(r.Context(), database.GetReportMonthsParams{
 		InputUserID: userID,
-		InputYear:   params.Year,
+		InputYear:   int32(year),
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't get years result.", err)

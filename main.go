@@ -99,7 +99,7 @@ func main() {
 	mux.Handle("DELETE /api/projects", http.HandlerFunc(cfg.handlerDeleteProject))
 
 	mux.Handle("GET /api/reports/years", http.HandlerFunc(cfg.handlerGetReportYears))
-	mux.Handle("GET /api/reports/months", http.HandlerFunc(cfg.handlerGetReportMonths))
+	mux.Handle("GET /api/reports/months/{year}", http.HandlerFunc(cfg.handlerGetReportMonths))
 
 	log.Printf("Serving on: http://localhost:%s\n", port)
 	log.Fatal(srv.ListenAndServe())

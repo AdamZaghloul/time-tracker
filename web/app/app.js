@@ -1170,7 +1170,7 @@ async function drillDownReport(type, row){
   let endpoint = "";
 
   if (type == "months"){
-    endpoint = "/api/reports/months";
+    endpoint = `/api/reports/months/${year}`;
     jsonBody = JSON.stringify({ year })
   }
 
@@ -1181,7 +1181,6 @@ async function drillDownReport(type, row){
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: jsonBody,
     });
     data = await res.json();
     if (!res.ok) {
