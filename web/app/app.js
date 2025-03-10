@@ -1097,7 +1097,7 @@ async function refreshReport(){
 
     for (const year of data){
       let row = table.insertRow();
-      row.setAttribute('id', year.Year);
+      row.setAttribute('year', year.Year);
 
       let date = row.insertCell(0);
       date.innerHTML = year.Year;
@@ -1149,12 +1149,61 @@ async function refreshReport(){
       button.innerHTML = `<i class="fa fa-bar-chart"></i>`;
       button.classList.add("subtle");
       button.addEventListener("click", function(){
-        drillDownReport("year", row);
+        dashboardReport("year", row);
       });
       cell.append(button);
+
+      let button2 = document.createElement('button');
+      button2.innerHTML = `<i class="fa fa-caret-down"></i>`;
+      button2.classList.add("subtle");
+      button2.addEventListener("click", function(){
+        drillDownReport("months", row);
+      });
+      cell.append(button2);
     }
 }
 
-function drillDownReport(type, row){
-  alert(`${type} drilldown`);
+async function drillDownReport(type, row){
+  let year = row.getAttribute("year");
+  let month = null;
+  let jsonBody = "";
+  let endpoint = "";
+
+  if (type == "months"){
+    endpoint = "/api/reports/months";
+    jsonBody = JSON.stringify({ year })
+  }
+
+  try {
+    const res = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: jsonBody,
+    });
+    data = await res.json();
+    if (!res.ok) {
+      const err = new Error(`Failed to get report ${type}: ${data.error}`);
+      err.code = res.status;
+      throw err;
+    }
+  } catch (error) {
+    if(error.code == '401'){
+      alert(error.code);
+      logout();
+    }else{
+      alert(`Error: ${error.message}`);
+      input.remove();
+      editableCell = null;
+        
+      return;
+    }
+  }
+
+}
+
+function dashboardReport(type, row){
+  alert(`${type} dashboard`);
 }
