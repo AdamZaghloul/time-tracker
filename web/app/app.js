@@ -1034,7 +1034,7 @@ function allYearsReport(){
 async function refreshReport(){
   var data;
 
-  try {
+  /*try {
       const res = await fetch("/api/reports/years", {
         method: "GET",
         headers: {
@@ -1055,7 +1055,9 @@ async function refreshReport(){
       }else{
         alert(`Error: ${error.message}`);
       }
-    }
+    }*/
+
+    var data = await getReportData("years", null);
     
     const table = document.getElementById("reportTableBody");
     const tableHead = document.getElementById("reportTableHead");
@@ -1097,81 +1099,113 @@ async function refreshReport(){
 
     for (const year of data){
       let row = table.insertRow();
-      row.setAttribute('year', year.Year);
 
-      let date = row.insertCell(0);
-      date.innerHTML = year.Year;
-
-      let startTime = row.insertCell(1);
-      startTime.innerHTML = year.StartTime;
-
-      let totalCol = row.insertCell(2);
-      let total = 0;
-
-      for(var i = 0; i < numCats; i++){
-        let cell = row.insertCell(3 + i);
-        if(!year.CategoryData[categoryValues[i]]){
-          cell.innerHTML = 0;
-        }else{
-          cell.innerHTML = year.CategoryData[categoryValues[i]];
-          total += Number(year.CategoryData[categoryValues[i]]);
-        }
-      }
-
-      let cell = row.insertCell(3 + numCats);
-      if(!year.CategoryData["null"]){
-        cell.innerHTML = 0;
-      }else{
-        cell.innerHTML = year.CategoryData["null"];
-        total += Number(year.CategoryData["null"]);
-      }
-  
-      for(var i = 0; i < numProjs; i++){
-        let cell = row.insertCell(3 + numCats + 1 + i);
-        if(!year.ProjectData[projectValues[i]]){
-          cell.innerHTML = 0;
-        }else{
-          cell.innerHTML = year.ProjectData[projectValues[i]];
-        }
-      }
-
-      cell = row.insertCell(3 + numCats + 1 + numProjs);
-      if(!year.ProjectData["null"]){
-        cell.innerHTML = 0;
-      }else{
-        cell.innerHTML = year.ProjectData["null"];
-      }
-      
-      totalCol.innerHTML = total;
-
-      cell = row.insertCell(3 + numCats + 1 + numProjs+1);
-      let button = document.createElement('button');
-      button.innerHTML = `<i class="fa fa-bar-chart"></i>`;
-      button.classList.add("subtle");
-      button.addEventListener("click", function(){
-        dashboardReport("year", row);
-      });
-      cell.append(button);
-
-      let button2 = document.createElement('button');
-      button2.innerHTML = `<i class="fa fa-caret-down"></i>`;
-      button2.classList.add("subtle");
-      button2.addEventListener("click", function(){
-        drillDownReport("months", row);
-      });
-      cell.append(button2);
+      updateReportRow("years", year, row, numCats, numProjs);
     }
 }
 
-async function drillDownReport(type, row){
-  let year = row.getAttribute("year");
+function updateReportRow(type, entry, row, numCats, numProjs){
+  row.setAttribute('year', entry.Year);
+  row.setAttribute('expanded', false);
+  row.setAttribute('type', type);
+  let dateVal = null;
+  let childType = null;
+
+  if(type == "years"){
+    dateVal = entry.Year;
+    childType = "months";
+  }else if(type == "months"){
+    dateVal = entry.Month;
+    childType = "weeks";
+  }else if(type == "weeks"){
+    childType = "days";
+  }
+
+  let date = row.insertCell(0);
+  date.innerHTML = dateVal;
+
+  let startTime = row.insertCell(1);
+  startTime.innerHTML = entry.StartTime;
+
+  let totalCol = row.insertCell(2);
+  let total = 0;
+
+  for(var i = 0; i < numCats; i++){
+    let cell = row.insertCell(3 + i);
+    if(!entry.CategoryData[categoryValues[i]]){
+      cell.innerHTML = 0;
+    }else{
+      cell.innerHTML = entry.CategoryData[categoryValues[i]];
+      total += Number(entry.CategoryData[categoryValues[i]]);
+    }
+  }
+
+  let cell = row.insertCell(3 + numCats);
+  if(!entry.CategoryData["null"]){
+    cell.innerHTML = 0;
+  }else{
+    cell.innerHTML = entry.CategoryData["null"];
+    total += Number(entry.CategoryData["null"]);
+  }
+
+  for(var i = 0; i < numProjs; i++){
+    let cell = row.insertCell(3 + numCats + 1 + i);
+    if(!entry.ProjectData[projectValues[i]]){
+      cell.innerHTML = 0;
+    }else{
+      cell.innerHTML = entry.ProjectData[projectValues[i]];
+    }
+  }
+
+  cell = row.insertCell(3 + numCats + 1 + numProjs);
+  if(!entry.ProjectData["null"]){
+    cell.innerHTML = 0;
+  }else{
+    cell.innerHTML = entry.ProjectData["null"];
+  }
+  
+  totalCol.innerHTML = total;
+
+  cell = row.insertCell(3 + numCats + 1 + numProjs+1);
+  let button = document.createElement('button');
+  button.innerHTML = `<i class="fa fa-bar-chart"></i>`;
+  button.classList.add("subtle");
+  button.addEventListener("click", function(){
+    dashboardReport(type, row);
+  });
+  cell.append(button);
+
+  if(type != 'days'){
+
+    let button2 = document.createElement('button');
+    button2.innerHTML = `<i class="fa fa-caret-down"></i>`;
+    button2.classList.add("subtle");
+    button2.addEventListener("click", function(){
+      drillDownReport(type, childType, row, button2);
+    });
+    cell.append(button2);
+
+  }
+}
+
+async function getReportData(type, row){
+  let year = null;
   let month = null;
-  let jsonBody = "";
+  var data;
   let endpoint = "";
 
-  if (type == "months"){
-    endpoint = `/api/reports/months/${year}`;
-    jsonBody = JSON.stringify({ year })
+  if(!row){
+    endpoint = `/api/reports/years`;
+  }else{
+    year = row.getAttribute("year");
+
+    if (type == "months"){
+      endpoint = `/api/reports/months/${year}`;
+    }else if(type == "weeks"){
+      month = row.getAttribute("month");
+
+      endpoint = `/api/reports/months/${year}/weeks/${month}`;
+    }
   }
 
   try {
@@ -1194,15 +1228,74 @@ async function drillDownReport(type, row){
       logout();
     }else{
       alert(`Error: ${error.message}`);
-      input.remove();
-      editableCell = null;
         
-      return;
+      return null;
     }
   }
+
+  return data;
+
+}
+
+async function drillDownReport(parentType, childType, row, button){
+
+  index = row.rowIndex;
+  table = row.parentNode;
+  
+  if(row.getAttribute('expanded') == 'true'){
+    button.classList.remove('fa-rotate-180');
+    rowCheck = table.rows[index-1];
+
+    while(isChild(parentType, rowCheck.getAttribute('type'))){
+      rowCheck.remove();
+      if(table.rows.length >= index-1){
+        rowCheck = table.rows[index-1];
+      }else{
+        break;
+      }
+    }
+
+    row.setAttribute('expanded', false);
+    return;
+  }
+
+  data = await getReportData(childType, row);
+  button.classList.add('fa-rotate-180');
+
+  let numCats = categoryNames.length;
+  let numProjs = projectNames.length;
+
+  if(!data){
+    return;
+  }
+
+  for(const entry of data){
+    newRow = table.insertRow(index-1);
+    updateReportRow(childType, entry, newRow, numCats, numProjs);
+  }
+
+  row.setAttribute('expanded', true);
 
 }
 
 function dashboardReport(type, row){
   alert(`${type} dashboard`);
+}
+
+function isChild(parentType, childType){
+  if(parentType == 'years'){
+    if(childType == 'months' || childType == 'weeks' || childType == 'days'){
+      return true;
+    }
+  }else if(parentType == 'months'){
+    if(childType == 'weeks' || childType == 'days'){
+      return true;
+    }
+  }else if(parentType == 'weeks'){
+    if(childType == 'days'){
+      return true;
+    }
+  }
+
+  return false;
 }
