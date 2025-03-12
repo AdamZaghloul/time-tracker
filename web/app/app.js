@@ -1032,30 +1032,6 @@ function allYearsReport(){
 }
 
 async function refreshReport(){
-  var data;
-
-  /*try {
-      const res = await fetch("/api/reports/years", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      data = await res.json();
-      if (!res.ok) {
-        const err = new Error(`Failed to get years report: ${data.error}`);
-        err.code = res.status;
-        throw err;
-      }
-    } catch (error) {
-      if(error.code == '401'){
-        alert(error.code);
-        logout();
-      }else{
-        alert(`Error: ${error.message}`);
-      }
-    }*/
 
     var data = await getReportData("years", null);
     
@@ -1116,8 +1092,11 @@ function updateReportRow(type, entry, row, numCats, numProjs){
     childType = "months";
   }else if(type == "months"){
     dateVal = entry.Month;
+    row.setAttribute("month", entry.Month);
     childType = "weeks";
   }else if(type == "weeks"){
+    dateVal = `Week of ${entry.Week.split('T')[0].split('-').slice(1,3).join('-')}`;
+    row.setAttribute("week", entry.Week);
     childType = "days";
   }
 

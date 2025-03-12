@@ -58,7 +58,43 @@ func (cfg *apiConfig) handlerGetReportMonths(w http.ResponseWriter, r *http.Requ
 		InputYear:   int32(year),
 	})
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't get years result.", err)
+		respondWithError(w, http.StatusInternalServerError, "Couldn't get months result.", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, result)
+}
+
+func (cfg *apiConfig) handlerGetReportWeeks(w http.ResponseWriter, r *http.Request) {
+
+	token, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't find JWT", err)
+		return
+	}
+
+	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't validate JWT", err)
+		return
+	}
+
+	yearString := r.PathValue("year")
+	month := r.PathValue("month")
+
+	year, err := strconv.Atoi(yearString)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't decode year", err)
+		return
+	}
+
+	result, err := cfg.db.GetReportWeeks(r.Context(), database.GetReportWeeksParams{
+		InputUserID: userID,
+		InputYear:   int32(year),
+		InputMonth:  month,
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't get weeks result.", err)
 		return
 	}
 
