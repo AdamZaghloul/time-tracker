@@ -54,7 +54,7 @@ BEGIN
         COALESCE(jsonb_object_agg(COALESCE(proj.project_id::TEXT, 'null'), proj.total_duration), '{}'::JSONB) AS project_data
     FROM category_agg cat
     FULL JOIN project_agg proj
-    ON cat.month = proj.month  
+    ON cat.week = proj.week  
     LEFT JOIN avg_start_time_agg avg
     ON COALESCE(cat.week, proj.week) = avg.week AND COALESCE(cat.month, proj.month) = avg.month AND COALESCE(cat.year, proj.year) = avg.year
     GROUP BY COALESCE(cat.week, proj.week), COALESCE(cat.month, proj.month), COALESCE(cat.year, proj.year), avg.avg_start_time

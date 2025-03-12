@@ -6,40 +6,44 @@ BEGIN
     RETURN QUERY
     WITH category_agg AS (
         SELECT 
+            EXTRACT(MONTH FROM a.start_time)::INT AS month_num,  
             TO_CHAR(a.start_time, 'FMMonth') AS month,
             EXTRACT(YEAR FROM a.start_time)::INT AS year,  
             a.category_id,  
             SUM(ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time)) / 60)) AS total_duration
         FROM activities a  
         WHERE a.user_id = input_user_id  
-        GROUP BY month, year, a.category_id
+        GROUP BY month_num, month, year, a.category_id
     ),
     project_agg AS (
         SELECT 
+            EXTRACT(MONTH FROM a.start_time)::INT AS month_num,
             TO_CHAR(a.start_time, 'FMMonth') AS month,
             EXTRACT(YEAR FROM a.start_time)::INT AS year,  
             a.project_id,  
             SUM(ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time)) / 60)) AS total_duration
         FROM activities a  
         WHERE a.user_id = input_user_id  
-        GROUP BY month, year, a.project_id
+        GROUP BY month_num, month, year, a.project_id
     ),
     daily_start_times AS (
     SELECT 
+        EXTRACT(MONTH FROM a.start_time)::INT AS month_num,
         TO_CHAR(a.start_time, 'FMMonth') AS month,
         EXTRACT(YEAR FROM a.start_time)::INT AS year,
         EXTRACT(EPOCH FROM MIN(a.start_time) - DATE_TRUNC('day', MIN(a.start_time))) AS seconds_since_midnight
     FROM activities a
     WHERE a.user_id = input_user_id
-    GROUP BY month, year, DATE(a.start_time)
+    GROUP BY month_num, month, year, DATE(a.start_time)
     ),
     avg_start_time_agg AS (
         SELECT 
+            month_num,
             month,
             year,
             TO_CHAR(TO_TIMESTAMP(AVG(seconds_since_midnight)) AT TIME ZONE 'UTC', 'HH24:MI') AS avg_start_time
         FROM daily_start_times
-        GROUP BY month, year
+        GROUP BY month_num, month, year
     )
     SELECT 
         COALESCE(cat.month, proj.month) AS return_month,
@@ -52,9 +56,9 @@ BEGIN
     ON cat.month = proj.month  
     LEFT JOIN avg_start_time_agg avg
     ON COALESCE(cat.month, proj.month) = avg.month AND COALESCE(cat.year, proj.year) = avg.year
-    GROUP BY COALESCE(cat.month, proj.month), COALESCE(cat.year, proj.year), avg.avg_start_time
+    GROUP BY COALESCE(cat.month_num, proj.month_num), COALESCE(cat.month, proj.month), COALESCE(cat.year, proj.year), avg.avg_start_time
     HAVING COALESCE(cat.year, proj.year) = input_year
-    ORDER BY return_month, return_year DESC;
+    ORDER BY COALESCE(cat.month_num, proj.month_num) DESC;
 END;
 $$ LANGUAGE plpgsql;
 -- +goose StatementEnd
