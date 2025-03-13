@@ -1035,6 +1035,7 @@ function allYearsReport(){
 async function refreshReport(){
 
     var data = await getReportData("years", null);
+    firstButtons = {};
     
     const table = document.getElementById("reportTableBody");
     const tableHead = document.getElementById("reportTableHead");
@@ -1079,6 +1080,7 @@ async function refreshReport(){
 
       updateReportRow("years", year, row, numCats, numProjs);
     }
+    firstButtons['years'].click();
 }
 
 function updateReportRow(type, entry, row, numCats, numProjs){
@@ -1174,7 +1176,6 @@ function updateReportRow(type, entry, row, numCats, numProjs){
 
     if(!firstButtons[type]){
       firstButtons[type] = button2;
-      button2.click();
     }
   }
 }
@@ -1260,17 +1261,28 @@ async function drillDownReport(parentType, childType, row, button){
 
   let numCats = categoryNames.length;
   let numProjs = projectNames.length;
+  let doIClick = false;
+  
+  if(!firstButtons[childType]){
+    doIClick = true;
+  }
 
   if(!data){
     return;
   }
 
+  let i = 0;
   for(const entry of data){
-    newRow = table.insertRow(index-1);
+    newRow = table.insertRow(index-1+i);
     updateReportRow(childType, entry, newRow, numCats, numProjs);
+    i++;
   }
 
   row.setAttribute('expanded', true);
+
+  if(firstButtons[childType] && doIClick){
+    firstButtons[childType].click();
+  }
 
 }
 
