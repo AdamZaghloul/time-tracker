@@ -101,6 +101,7 @@ func main() {
 	mux.Handle("GET /api/reports/years", http.HandlerFunc(cfg.handlerGetReportYears))
 	mux.Handle("GET /api/reports/months/{year}", http.HandlerFunc(cfg.handlerGetReportMonths))
 	mux.Handle("GET /api/reports/months/{year}/weeks/{month}", http.HandlerFunc(cfg.handlerGetReportWeeks))
+	mux.Handle("GET /api/reports/months/{year}/weeks/{month}/days/{week}", http.HandlerFunc(cfg.handlerGetReportDays))
 
 	log.Printf("Serving on: http://localhost:%s\n", port)
 	log.Fatal(srv.ListenAndServe())
