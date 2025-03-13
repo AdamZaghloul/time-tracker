@@ -1096,8 +1096,15 @@ function updateReportRow(type, entry, row, numCats, numProjs){
     childType = "weeks";
   }else if(type == "weeks"){
     dateVal = `Week of ${entry.Week.split('T')[0].split('-').slice(1,3).join('-')}`;
-    row.setAttribute("week", entry.Week);
+    row.setAttribute("month", entry.Month);
+    row.setAttribute("week", entry.Week.split('T')[0].split('-').slice(1,3).join('-'));
     childType = "days";
+  }else if(type == "days"){
+    dateVal = `${entry.Dayname} ${entry.Day.split('T')[0].split('-').slice(1,3).join('-')}`;
+    row.setAttribute("month", entry.Month);
+    row.setAttribute("week", entry.Week.split('T')[0].split('-').slice(1,3).join('-'));
+    row.setAttribute("day", entry.Day.split('T')[0].split('-').slice(1,3).join('-'));
+    childType = "null";
   }
 
   let date = row.insertCell(0);
@@ -1170,6 +1177,7 @@ function updateReportRow(type, entry, row, numCats, numProjs){
 async function getReportData(type, row){
   let year = null;
   let month = null;
+  let week = null;
   var data;
   let endpoint = "";
 
@@ -1184,6 +1192,10 @@ async function getReportData(type, row){
       month = row.getAttribute("month");
 
       endpoint = `/api/reports/months/${year}/weeks/${month}`;
+    }else if(type == "days"){
+      month = row.getAttribute("month");
+      week= row.getAttribute("week");
+      endpoint = `/api/reports/months/${year}/weeks/${month}/days/${year}-${week}`;
     }
   }
 

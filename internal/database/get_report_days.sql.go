@@ -15,7 +15,8 @@ import (
 
 const getReportDays = `-- name: GetReportDays :many
 SELECT 
-    (r).return_day::DATE as week,
+    (r).return_day::DATE as day,
+    TO_CHAR((r).return_day::DATE, 'Day') as dayName,
     (r).return_week::DATE as week,
     (r).return_month::TEXT as month,
     (r).return_year::INT as year,
@@ -33,8 +34,9 @@ type GetReportDaysParams struct {
 }
 
 type GetReportDaysRow struct {
+	Day          time.Time
+	Dayname      string
 	Week         time.Time
-	Week_2       time.Time
 	Month        string
 	Year         int32
 	StartTime    interface{}
@@ -58,8 +60,9 @@ func (q *Queries) GetReportDays(ctx context.Context, arg GetReportDaysParams) ([
 	for rows.Next() {
 		var i GetReportDaysRow
 		if err := rows.Scan(
+			&i.Day,
+			&i.Dayname,
 			&i.Week,
-			&i.Week_2,
 			&i.Month,
 			&i.Year,
 			&i.StartTime,

@@ -50,7 +50,7 @@ func (cfg *apiConfig) handlerGetReportMonths(w http.ResponseWriter, r *http.Requ
 
 	year, err := strconv.Atoi(yearString)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Couldn't decode year", err)
+		respondWithError(w, http.StatusInternalServerError, "Couldn't decode year", err)
 		return
 	}
 
@@ -85,7 +85,7 @@ func (cfg *apiConfig) handlerGetReportWeeks(w http.ResponseWriter, r *http.Reque
 
 	year, err := strconv.Atoi(yearString)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Couldn't decode year", err)
+		respondWithError(w, http.StatusInternalServerError, "Couldn't decode year", err)
 		return
 	}
 
@@ -122,13 +122,13 @@ func (cfg *apiConfig) handlerGetReportDays(w http.ResponseWriter, r *http.Reques
 
 	year, err := strconv.Atoi(yearString)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Couldn't decode year", err)
+		respondWithError(w, http.StatusInternalServerError, "Couldn't decode year", err)
 		return
 	}
 
-	week, err := time.Parse(weekString, "MM-DD-YYYY")
+	week, err := time.Parse(time.DateOnly, weekString)
 	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Couldn't decode week", err)
+		respondWithError(w, http.StatusInternalServerError, "Couldn't decode week", err)
 		return
 	}
 
