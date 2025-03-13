@@ -6,6 +6,7 @@ let categoryTerms = [];
 let projectNames = [];
 let projectValues = [];
 let projectTerms = [];
+let firstButtons = {};
 
 document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
@@ -1171,6 +1172,10 @@ function updateReportRow(type, entry, row, numCats, numProjs){
     });
     cell.append(button2);
 
+    if(!firstButtons[type]){
+      firstButtons[type] = button2;
+      button2.click();
+    }
   }
 }
 
