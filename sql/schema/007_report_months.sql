@@ -58,7 +58,7 @@ BEGIN
     ON COALESCE(cat.month, proj.month) = avg.month AND COALESCE(cat.year, proj.year) = avg.year
     GROUP BY COALESCE(cat.month_num, proj.month_num), COALESCE(cat.month, proj.month), COALESCE(cat.year, proj.year), avg.avg_start_time
     HAVING COALESCE(cat.year, proj.year) = input_year
-    ORDER BY COALESCE(cat.month_num, proj.month_num);
+    ORDER BY COALESCE(cat.month_num, proj.month_num) DESC;
 END;
 $$ LANGUAGE plpgsql;
 -- +goose StatementEnd

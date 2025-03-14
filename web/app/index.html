@@ -85,16 +85,16 @@
         <div id="report-section" class="log-content" style="display: none">
             <table style="width:100%">
                 <thead>
-                    <tr>
+                    <tr class="default-bg">
                         <th rowspan="2">Date</th>
                         <th rowspan="2">Start Time</th>
                         <th rowspan="2">Total</th>
-                        <th id="category-label">Category</th>
-                        <th id="project-label">Project</th>
-                        <th rowspan="2"><button onclick="allYearsReport();" type="button"><i class="fa fa-bar-chart" aria-hidden="true"></i></button></th>
+                        <th id="category-label" class="center">Category</th>
+                        <th id="project-label" class="center">Project</th>
+                        <th rowspan="2" class="center"><button onclick="allYearsReport();" type="button"><i class="fa fa-bar-chart" aria-hidden="true"></i></button></th>
                         <th rowspan="2" id="expand-top"></th>
                     </tr>
-                    <tr id="reportTableHead">
+                    <tr id="reportTableHead" class="default-bg">
                         <th id="null-category">None</th>
                         <th id="null-project">None</th>
                     </tr>
@@ -124,7 +124,7 @@
                         </tr>
                     </thead>
                     <tbody id="categoryTableBody">
-                        <tr class="last-row">
+                        <tr class="default-bg">
                             <td colspan="2" style="text-align: center;">
                                 <button onclick="addCategoryProject('category')" type="button">+ Add Category</button>
                             </td>
@@ -145,7 +145,7 @@
                         </tr>
                     </thead>
                     <tbody id="projectTableBody">
-                        <tr class="last-row">
+                        <tr class="default-bg">
                             <td colspan="2" style="text-align: center;">
                                 <button onclick="addCategoryProject('project')" type="button">+ Add Project</button>
                             </td>

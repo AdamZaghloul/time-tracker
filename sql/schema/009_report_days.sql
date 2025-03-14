@@ -54,7 +54,7 @@ BEGIN
     HAVING COALESCE(cat.year, proj.year) = input_year 
        AND COALESCE(cat.month, proj.month) = input_month 
        AND COALESCE(cat.week, proj.week) = input_week
-    ORDER BY return_day;
+    ORDER BY return_day DESC;
 END;
 $$ LANGUAGE plpgsql;
 -- +goose StatementEnd

@@ -1087,6 +1087,7 @@ function updateReportRow(type, entry, row, numCats, numProjs){
   row.setAttribute('year', entry.Year);
   row.setAttribute('expanded', false);
   row.setAttribute('type', type);
+  row.classList.add(type);
   let dateVal = null;
   let childType = null;
 
@@ -1112,6 +1113,7 @@ function updateReportRow(type, entry, row, numCats, numProjs){
 
   let date = row.insertCell(0);
   date.innerHTML = dateVal;
+  date.classList.add(type);
 
   let startTime = row.insertCell(1);
   startTime.innerHTML = entry.StartTime;
