@@ -1,3 +1,5 @@
+import("https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js");
+
 let editableRow = null;
 let editableCell = null;
 let categoryNames = [];
@@ -47,6 +49,25 @@ document.addEventListener("click",function(event){
       editableCell = null;
       return;
     }
+});
+
+var modal = document.getElementById("dashboardModal");
+var span = document.getElementsByClassName("close")[0];
+
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && modal.style.display == "block") {
+    modal.style.display = "none";
+  }
 });
 
 function logout() {
@@ -1029,7 +1050,7 @@ async function exportFile() {
 }
 
 function allYearsReport(){
-  alert("all years report");
+  dashboardReport("years", null);
 }
 
 async function refreshReport(){
@@ -1162,7 +1183,7 @@ function updateReportRow(type, entry, row, numCats, numProjs){
   button.innerHTML = `<i class="fa fa-bar-chart"></i>`;
   button.classList.add("subtle");
   button.addEventListener("click", function(){
-    dashboardReport(type, row);
+    dashboardReport(childType, row);
   });
   cell.append(button);
 
@@ -1288,8 +1309,93 @@ async function drillDownReport(parentType, childType, row, button){
 
 }
 
-function dashboardReport(type, row){
-  alert(`${type} dashboard`);
+async function dashboardReport(type, row){
+  var modal = document.getElementById("dashboardModal");
+
+  data = await getReportData(type, row);
+
+  if(!data){
+    return;
+  }
+
+  //iterate through and make new dicts for category and project totals
+  categoryTotals = {};
+  categoryTotals["None"] = 0;
+
+  projectTotals = {};
+  projectTotals["None"] = 0;
+
+  for(entry of data){
+    if(entry.CategoryData["null"]){
+      categoryTotals["None"] += entry.CategoryData["null"];
+    }
+    for(var i = 0; i < categoryValues.length; i++){
+      if(entry.CategoryData[categoryValues[i]]){
+        if(categoryTotals[categoryValues[i]]){
+          categoryTotals[categoryNames[i]] += entry.CategoryData[categoryValues[i]];
+        }else{
+          categoryTotals[categoryNames[i]] = entry.CategoryData[categoryValues[i]];
+        }
+      }
+    }
+
+    if(entry.ProjectData["null"]){
+      projectTotals["None"] += entry.ProjectData["null"];
+    }
+    for(var i = 0; i < projectValues.length; i++){
+      if(entry.ProjectData[projectValues[i]]){
+        if(projectTotals[projectValues[i]]){
+          projectTotals[projectNames[i]] += entry.ProjectData[projectValues[i]];
+        }else{
+          projectTotals[projectNames[i]] = entry.ProjectData[projectValues[i]];
+        }
+      }
+    }
+  }
+
+  chart = document.getElementById('categoryPie');
+  parent = chart.parentNode;
+  chart.remove();
+  parent.innerHTML = `<canvas id="categoryPie"></canvas>`
+
+  new Chart(
+    document.getElementById('categoryPie'),
+    {
+      type: 'pie',
+      data: {
+        labels: Object.keys(categoryTotals),
+        datasets: [
+          {
+            data: Object.values(categoryTotals),
+            backgroundColor: ['#041011', '#0B292E', '#0E3A40', '#14555E', '#1B6E78', '#25898F', '#30A3A5', '#3CB7B2', '#4ACCCC', '#5DD9D3', '#6EE5DF', '#82F2EB']
+          }
+        ]
+      }
+    }
+  );
+
+  chart = document.getElementById('projectPie');
+  parent = chart.parentNode;
+  chart.remove();
+  parent.innerHTML = `<canvas id="projectPie"></canvas>`
+
+  new Chart(
+    document.getElementById('projectPie'),
+    {
+      type: 'pie',
+      data: {
+        labels: Object.keys(projectTotals),
+        datasets: [
+          {
+            data: Object.values(projectTotals),
+            backgroundColor: ['#041011', '#0B292E', '#0E3A40', '#14555E', '#1B6E78', '#25898F', '#30A3A5', '#3CB7B2', '#4ACCCC', '#5DD9D3', '#6EE5DF', '#82F2EB']
+          }
+        ]
+      }
+    }
+  );
+
+  modal.style.display = "block";
 }
 
 function isChild(parentType, childType){
@@ -1308,4 +1414,9 @@ function isChild(parentType, childType){
   }
 
   return false;
+}
+
+function createModalCharts(){
+  blankLabels = [];
+  blankData = [];
 }
