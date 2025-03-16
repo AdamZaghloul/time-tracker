@@ -10,7 +10,7 @@ BEGIN
             TO_CHAR(a.start_time, 'FMMonth') AS month,
             EXTRACT(YEAR FROM a.start_time)::INT AS year,  
             a.category_id,  
-            SUM(ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time)) / 60)) AS total_duration
+            SUM(ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time)) / 60 / 60, 2)) AS total_duration
         FROM activities a  
         WHERE a.user_id = input_user_id  
         GROUP BY month_num, month, year, a.category_id
@@ -21,7 +21,7 @@ BEGIN
             TO_CHAR(a.start_time, 'FMMonth') AS month,
             EXTRACT(YEAR FROM a.start_time)::INT AS year,  
             a.project_id,  
-            SUM(ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time)) / 60)) AS total_duration
+            SUM(ROUND(EXTRACT(EPOCH FROM (a.end_time - a.start_time)) / 60 / 60, 2)) AS total_duration
         FROM activities a  
         WHERE a.user_id = input_user_id  
         GROUP BY month_num, month, year, a.project_id
