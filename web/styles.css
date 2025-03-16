@@ -314,7 +314,7 @@ h4 .tooltip{
 
 .modal-content {
     background-color: var(--bg-color);
-    margin: 15% auto; /* 15% from the top and centered */
+    margin: 2% auto; /*from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */

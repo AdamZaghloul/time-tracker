@@ -1318,37 +1318,87 @@ async function dashboardReport(type, row){
     return;
   }
 
+  let labelString = "";
+  let subheaderString = "";
+
+  if(type == "years"){
+    labelString = "All Time"
+  }else if(type == "months"){
+    year = row.getAttribute("year");
+    labelString = year;
+  }else if(type == "weeks"){
+    year = row.getAttribute("year");
+    month = row.getAttribute("month");
+    labelString = `${month} ${year}`;
+  }else if(type == "days"){
+    week= row.getAttribute("week");
+    year = row.getAttribute("year");
+    labelString = `Week of ${week}-${year}`;
+  }
+
   //iterate through and make new dicts for category and project totals
+  totalTime = 0;
+  
+  timeSeriesLabels = [];
+
   categoryTotals = {};
   categoryTotals["None"] = 0;
+  categoryTimeSeries = Object.fromEntries(categoryNames.map(name => [name, []]));
+  categoryTimeSeries["None"] = [];
 
   projectTotals = {};
   projectTotals["None"] = 0;
+  projectTimeSeries = Object.fromEntries(projectNames.map(name => [name, []]));
+  projectTimeSeries["None"] = [];
 
   for(entry of data){
+    if(type == "years"){
+      timeSeriesLabels.push(entry.Year);
+    }else if(type == "months"){
+      timeSeriesLabels.push(entry.Month);
+    }else if(type == "weeks"){
+      timeSeriesLabels.push(`Week of ${entry.Week.split('T')[0].split('-').slice(1,3).join('-')}`);
+    }else if(type == "days"){
+      timeSeriesLabels.push(entry.Day.split('T')[0].split('-').slice(1,3).join('-'));
+    }
+
     if(entry.CategoryData["null"]){
+      totalTime += entry.CategoryData["null"];
       categoryTotals["None"] += entry.CategoryData["null"];
+      categoryTimeSeries["None"].push(entry.CategoryData["null"]);
+    }else{
+      categoryTimeSeries["None"].push(0);
     }
     for(var i = 0; i < categoryValues.length; i++){
       if(entry.CategoryData[categoryValues[i]]){
+        categoryTimeSeries[categoryNames[i]].push(entry.CategoryData[categoryValues[i]]);
+        totalTime += entry.CategoryData[categoryValues[i]];
         if(categoryTotals[categoryValues[i]]){
           categoryTotals[categoryNames[i]] += entry.CategoryData[categoryValues[i]];
         }else{
           categoryTotals[categoryNames[i]] = entry.CategoryData[categoryValues[i]];
         }
+      }else{
+        categoryTimeSeries[categoryNames[i]].push(0);
       }
     }
 
     if(entry.ProjectData["null"]){
       projectTotals["None"] += entry.ProjectData["null"];
+      projectTimeSeries["None"].push(entry.ProjectData["null"]);
+    }else{
+      projectTimeSeries["None"].push(0);
     }
     for(var i = 0; i < projectValues.length; i++){
       if(entry.ProjectData[projectValues[i]]){
+        projectTimeSeries[projectNames[i]].push(entry.ProjectData[projectValues[i]]);
         if(projectTotals[projectValues[i]]){
           projectTotals[projectNames[i]] += entry.ProjectData[projectValues[i]];
         }else{
           projectTotals[projectNames[i]] = entry.ProjectData[projectValues[i]];
         }
+      }else{
+        projectTimeSeries[projectNames[i]].push(0);
       }
     }
   }
@@ -1370,6 +1420,12 @@ async function dashboardReport(type, row){
             backgroundColor: ['#041011', '#0B292E', '#0E3A40', '#14555E', '#1B6E78', '#25898F', '#30A3A5', '#3CB7B2', '#4ACCCC', '#5DD9D3', '#6EE5DF', '#82F2EB']
           }
         ]
+      },
+      options: {
+        title: {
+            display: true,
+            text: 'Hours per Category'
+        }
       }
     }
   );
@@ -1391,9 +1447,77 @@ async function dashboardReport(type, row){
             backgroundColor: ['#041011', '#0B292E', '#0E3A40', '#14555E', '#1B6E78', '#25898F', '#30A3A5', '#3CB7B2', '#4ACCCC', '#5DD9D3', '#6EE5DF', '#82F2EB']
           }
         ]
+      },
+      options: {
+        title: {
+            display: true,
+            text: 'Hours per Project'
+        }
       }
     }
   );
+
+  chart = document.getElementById('categoryLine');
+  parent = chart.parentNode;
+  chart.remove();
+  parent.innerHTML = `<canvas id="categoryLine"></canvas>`
+
+  new Chart(
+    document.getElementById('categoryLine'),
+    {
+      type: 'line',
+      data: {
+        labels: timeSeriesLabels.reverse(),
+        datasets: Object.keys(categoryTimeSeries).reverse().map((key, index) => ({
+          label: key,
+          data: categoryTimeSeries[key].reverse(),
+          borderColor: ['#041011', '#0B292E', '#0E3A40', '#14555E', '#1B6E78', '#25898F', '#30A3A5', '#3CB7B2', '#4ACCCC', '#5DD9D3', '#6EE5DF', '#82F2EB'][index % 12],
+          backgroundColor: 'transparent',
+          borderWidth: 2
+        }))
+      },
+      options: {
+        title: {
+            display: true,
+            text: 'Hours per Category Trend'
+        }
+      }
+    }
+  );
+
+  chart = document.getElementById('projectLine');
+  parent = chart.parentNode;
+  chart.remove();
+  parent.innerHTML = `<canvas id="projectLine"></canvas>`
+
+  new Chart(
+    document.getElementById('projectLine'),
+    {
+      type: 'line',
+      data: {
+        labels: timeSeriesLabels,
+        datasets: Object.keys(projectTimeSeries).reverse().map((key, index) => ({
+          label: key,
+          data: projectTimeSeries[key].reverse(),
+          borderColor: ['#041011', '#0B292E', '#0E3A40', '#14555E', '#1B6E78', '#25898F', '#30A3A5', '#3CB7B2', '#4ACCCC', '#5DD9D3', '#6EE5DF', '#82F2EB'][index % 12],
+          backgroundColor: 'transparent',
+          borderWidth: 2
+        }))
+      },
+      options: {
+        title: {
+            display: true,
+            text: 'Hours per Project Trend'
+        }
+      }
+    }
+  );
+
+  let modalHeader = document.getElementsByClassName("modal-header")[0];
+  modalHeader.innerHTML = `${labelString} <span class="subtitle modal-subheader">Total Hours:</span>`;
+
+  let modalSubheader = document.getElementsByClassName("modal-subheader")[0];
+  modalSubheader.innerHTML = `Total Hours: ${totalTime}`;
 
   modal.style.display = "block";
 }
