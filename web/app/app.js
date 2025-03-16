@@ -1382,7 +1382,7 @@ async function dashboardReport(type, row){
         categoryTimeSeries[categoryNames[i]].push(entry.CategoryData[categoryValues[i]]);
         if((type == "null" && entry.Day.split('T')[0].split('-').slice(1,3).join('-') == day) || type != "null"){
           totalTime += entry.CategoryData[categoryValues[i]];
-          if(categoryTotals[categoryValues[i]]){
+          if(categoryTotals[categoryNames[i]]){
             categoryTotals[categoryNames[i]] += entry.CategoryData[categoryValues[i]];
           }else{
             categoryTotals[categoryNames[i]] = entry.CategoryData[categoryValues[i]];
@@ -1405,7 +1405,7 @@ async function dashboardReport(type, row){
       if(entry.ProjectData[projectValues[i]]){
         projectTimeSeries[projectNames[i]].push(entry.ProjectData[projectValues[i]]);
         if((type == "null" && entry.Day.split('T')[0].split('-').slice(1,3).join('-') == day) || type != "null"){
-          if(projectTotals[projectValues[i]]){
+          if(projectTotals[projectNames[i]]){
             projectTotals[projectNames[i]] += entry.ProjectData[projectValues[i]];
           }else{
             projectTotals[projectNames[i]] = entry.ProjectData[projectValues[i]];
