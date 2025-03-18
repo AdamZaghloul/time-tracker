@@ -50,7 +50,7 @@ func main() {
 	//Test DB Connection
 	err = db.Ping()
 	if err != nil {
-		log.Fatal("Unable to ping database")
+		log.Fatal("Unable to ping database \v", err.Error())
 	}
 
 	dbQueries := database.New(db)

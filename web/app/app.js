@@ -837,11 +837,18 @@ async function processImport(text){
   var data = null;
   var finalJSON = "[";
 
-  var lines = text.split("\n");
+  var lines = text.trim().split("\n");
   headerLine = lines[0].split(",");
 
   if (headerLine.length != 5){
     alert("Invalid number of input columns. Please refer to sample for required format.")
+    document.getElementById('file-input').value = null;
+    return;
+  }
+
+  if ((text.split(",").length-1)/4 != lines.length){
+    alert("Number of lines doesn't match number of commas. Please make sure no text values contain commas.")
+    document.getElementById('file-input').value = null;
     return;
   }
 
@@ -951,7 +958,7 @@ async function processImport(text){
         }
 
         projectValues.push(data.ID);
-        projectNames.push(data.Category);
+        projectNames.push(data.Project);
         projectTerms.push("");
         project = data.ID;
       }else{
