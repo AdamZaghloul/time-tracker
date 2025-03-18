@@ -34,7 +34,7 @@ BEGIN
             date_trunc('week', a.start_time)::DATE AS week,
             TO_CHAR(a.start_time, 'FMMonth') AS month,
             EXTRACT(YEAR FROM a.start_time)::INT AS year,
-            TO_CHAR(TO_TIMESTAMP(AVG(EXTRACT(EPOCH FROM a.start_time - DATE_TRUNC('day', a.start_time)))) AT TIME ZONE 'UTC', 'HH24:MI') AS avg_start_time
+            TO_CHAR(TO_TIMESTAMP(EXTRACT(EPOCH FROM MIN(a.start_time) - DATE_TRUNC('day', MIN(a.start_time)))) AT TIME ZONE 'UTC', 'HH24:MI') AS avg_start_time
         FROM activities a
         WHERE a.user_id = input_user_id
         GROUP BY day, week, month, year
