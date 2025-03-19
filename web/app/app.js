@@ -1437,7 +1437,9 @@ async function dashboardReport(type, row){
         labels: Object.keys(categoryTotals),
         datasets: [
           {
-            data: Object.values(categoryTotals),
+            data: Object.values(categoryTotals).map(function(each_element){
+              return (Math.round(each_element * 100) / 100).toFixed(2);
+            }),
             backgroundColor: ['#041011', '#0B292E', '#0E3A40', '#14555E', '#1B6E78', '#25898F', '#30A3A5', '#3CB7B2', '#4ACCCC', '#5DD9D3', '#6EE5DF', '#82F2EB']
           }
         ]
@@ -1464,7 +1466,9 @@ async function dashboardReport(type, row){
         labels: Object.keys(projectTotals),
         datasets: [
           {
-            data: Object.values(projectTotals),
+            data: Object.values(projectTotals).map(function(each_element){
+              return (Math.round(each_element * 100) / 100).toFixed(2);
+            }),
             backgroundColor: ['#041011', '#0B292E', '#0E3A40', '#14555E', '#1B6E78', '#25898F', '#30A3A5', '#3CB7B2', '#4ACCCC', '#5DD9D3', '#6EE5DF', '#82F2EB']
           }
         ]
@@ -1492,7 +1496,9 @@ async function dashboardReport(type, row){
           labels: timeSeriesLabels.reverse(),
           datasets: Object.keys(categoryTimeSeries).reverse().map((key, index) => ({
             label: key,
-            data: categoryTimeSeries[key].reverse(),
+            data: categoryTimeSeries[key].reverse().map(function(each_element){
+              return (Math.round(each_element * 100) / 100).toFixed(2);
+            }),
             borderColor: ['#041011', '#0B292E', '#0E3A40', '#14555E', '#1B6E78', '#25898F', '#30A3A5', '#3CB7B2', '#4ACCCC', '#5DD9D3', '#6EE5DF', '#82F2EB'][index % 12],
             backgroundColor: 'transparent',
             borderWidth: 2
@@ -1522,7 +1528,9 @@ async function dashboardReport(type, row){
           labels: timeSeriesLabels,
           datasets: Object.keys(projectTimeSeries).reverse().map((key, index) => ({
             label: key,
-            data: projectTimeSeries[key].reverse(),
+            data: projectTimeSeries[key].reverse().map(function(each_element){
+              return (Math.round(each_element * 100) / 100).toFixed(2);
+            }),
             borderColor: ['#041011', '#0B292E', '#0E3A40', '#14555E', '#1B6E78', '#25898F', '#30A3A5', '#3CB7B2', '#4ACCCC', '#5DD9D3', '#6EE5DF', '#82F2EB'][index % 12],
             backgroundColor: 'transparent',
             borderWidth: 2

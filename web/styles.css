@@ -7,8 +7,8 @@
     --table-weeks-bg-color-old: #1C6C78;
     --table-hover-color: #ddd;
     --tooltip-info-color: #ddd;
-    --fg-color-old: #f5f5f5;
     --fg-color: #888;
+    --standout-color: #f7f7f7;
     --subtle-color: #888;
     --submit-message-color: #257a4d;
     --primary-color: #2ca9bc;
@@ -132,7 +132,7 @@ h2 {
     border: 1px solid var(--input-border);
     border-radius: 5px;
     background-color: var(--input-bg);
-    color: var(--fg-color);
+    color: var(--standout-color);
     box-sizing: border-box;
 }
 
