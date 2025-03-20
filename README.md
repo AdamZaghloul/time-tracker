@@ -94,7 +94,7 @@ Similarly, the act of reviewing each of the activities in the log and categorizi
 4. Update import/export formats so that an export can be re-imported without any processing. In retrospect this is how it should have been from the get go but hindsight is 20/20.
 
 ## How to Deploy on RPI
-This probably doesn't belong in a readme but yolo.
+I chose to deploy the hosted app on my Raspberry Pie by containerizing with docker, which requires some extra steps for building on the arm architecture. Feel free to pull my image from dockerhub as well. 
 
 1. GOOS=linux GOARCH=arm go build -o time-tracker
 2. docker buildx build --platform=linux/arm64/v8 --push . -t adamzaghloul/time-tracker
