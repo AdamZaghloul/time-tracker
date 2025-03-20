@@ -39,10 +39,10 @@ Head over to [time.adamdevs.com](https://time.adamdevs.com) (if you aren't alrea
 Note this assumes:
 1. You have golang, postgres or other sql database, and [goose database management tool](https://github.com/pressly/goose)
 2. You have a .env file
-    FILEPATH - location of frontend to serve - "./web/" by default
-    PORT - "8080" by default
-    DB_STRING - database connection string
-    JWT_SECRET - Secret for JWT authentication/authorization
+    * FILEPATH - location of frontend to serve - "./web/" by default
+    * PORT - "8080" by default
+    * DB_STRING - database connection string
+    * JWT_SECRET - Secret for JWT authentication/authorization
 
 ### Clone the repo
 

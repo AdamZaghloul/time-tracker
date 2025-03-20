@@ -21,7 +21,10 @@
                 <li><a id="report-link" href="javascript:void(0);" onclick="nav('report')";>Report</a></li>
                 <li><a id="settings-link" href="javascript:void(0);" onclick="nav('settings');">Settings</a></li>
             </ul>
-            <button onclick="logout();" type="button">Logout</button>
+            <div>
+                <button style='margin-right:16px' class="button-subtle" onclick="window.open('https://github.com/AdamZaghloul/time-tracker', '_blank').focus();" type="button">About</button>
+                <button onclick="logout();" type="button">Logout</button>
+            </div>
         </div>
 
         <div id="track-section" class="track-content" style="display: block">
