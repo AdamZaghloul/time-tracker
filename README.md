@@ -16,7 +16,7 @@ So I built this time tracker -- after proving the concept in a spreadsheet syste
 
 ## 🚀 Quick Start
 
-Head over to [time.adamdevs.com](https://time.adamdevs.com) (if you aren't already there) and sign up!
+Head over to [time.adamdevs.com](https://time.adamdevs.com) and sign up!
 
 ## 📖 Usage
 
