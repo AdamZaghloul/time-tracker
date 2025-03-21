@@ -64,6 +64,7 @@ cd ../..
 ```bash
 go run .
 ```
+Navigate to [localhost:8080](localhost:8080) assuming you used the default port.
 
 ### Submit a pull request
 
