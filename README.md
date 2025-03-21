@@ -84,7 +84,7 @@ Similarly, the act of reviewing each of the activities in the log and categorizi
 ## Roadmap
 
 ### Priority
-1. Lazyload the log data as sometimes it takes ~3s to load a years worth of data. Looks like the api call is still ~100ms so the rate limiter may be populating the DOM.
+1. Lazyload the log data as sometimes it takes ~3s to load a year's worth of data. Looks like the api call is still ~100ms so the rate limiter may be populating the DOM.
 2. Add a loading spinner to the import data section. Large imports can hang with no feedback and feel broken.
 
 ### Nice to Have
