@@ -30,7 +30,7 @@ Head over to [time.adamdevs.com](https://time.adamdevs.com) and sign up!
     * Drill down into years, months, and weeks, and click in to get some graphs for trending.
 * Settings
     * Add categories and projects to track against your time.
-    * Add automatic categorization terms to categories and projects. If any of these comma-separated terms are present in an activity name, that category or project will automatically be applied.
+    * Add automatic categorization terms to categories and projects. If any of these comma-separated terms are present in an activity name, that category or project will automatically be applied when submitting any new activity.
     * Import your own activity history CSV for tracking in the system. See downloadable template for format.
     * Export your data in CSV format.
 
