@@ -16,7 +16,7 @@ So I built this time tracker -- after proving the concept in a spreadsheet syste
 
 ## 🚀 Quick Start
 
-Head over to [time.adamdevs.com](https://time.adamdevs.com) (if you aren't already there) and sign up!
+Head over to [time.adamdevs.com](https://time.adamdevs.com) and sign up!
 
 ## 📖 Usage
 
@@ -30,7 +30,7 @@ Head over to [time.adamdevs.com](https://time.adamdevs.com) (if you aren't alrea
     * Drill down into years, months, and weeks, and click in to get some graphs for trending.
 * Settings
     * Add categories and projects to track against your time.
-    * Add automatic categorization terms to categories and projects. If any of these comma-separated terms are present in an activity name, that category or project will automatically be applied.
+    * Add automatic categorization terms to categories and projects. If any of these comma-separated terms are present in an activity name, that category or project will automatically be applied when submitting any new activity.
     * Import your own activity history CSV for tracking in the system. See downloadable template for format.
     * Export your data in CSV format.
 
@@ -64,6 +64,7 @@ cd ../..
 ```bash
 go run .
 ```
+Navigate to [localhost:8080](localhost:8080) assuming you used the default port.
 
 ### Submit a pull request
 
@@ -84,7 +85,7 @@ Similarly, the act of reviewing each of the activities in the log and categorizi
 ## Roadmap
 
 ### Priority
-1. Lazyload the log data as sometimes it takes ~3s to load a years worth of data. Looks like the api call is still ~100ms so the rate limiter may be populating the DOM.
+1. Lazyload the log data as sometimes it takes ~3s to load a year's worth of data. Looks like the api call is still ~100ms so the rate limiter may be populating the DOM.
 2. Add a loading spinner to the import data section. Large imports can hang with no feedback and feel broken.
 
 ### Nice to Have
