@@ -90,8 +90,10 @@ Similarly, the act of reviewing each of the activities in the log and categorizi
 ### Nice to Have
 1. Don't call an API Post when there is no change to the input on a cell in the log or settings.
 2. Combine projects and categories into one data type to avoid repeating code. This may be a very large backend refactor with minimal benefits.
+    - Combine this with refactoring the category/projectNames, Values, and Terms variables into javascript maps for simplicity.
 3. Fix import so that text can contain commas and quotes. Currently csv processing is manual and simple, not allowing commas while quote behavior is untested.
 4. Update import/export formats so that an export can be re-imported without any processing. In retrospect this is how it should have been from the get go but hindsight is 20/20.
+5. Add auth middleware to get rid of boilerplate code from endpoints.
 
 ## How to Deploy on RPI
 I chose to deploy the hosted app on my Raspberry Pie by containerizing with docker, which requires some extra steps for building on the arm architecture. Feel free to pull my image from dockerhub as well. 
