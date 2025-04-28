@@ -85,9 +85,10 @@ Similarly, the act of reviewing each of the activities in the log and categorizi
 ## Roadmap
 
 ### Priority
-1. Lazyload the log data as sometimes it takes ~3s to load a year's worth of data. Looks like the api call is still ~100ms so the rate limiter may be populating the DOM.
-2. Add a loading spinner to the import data section. Large imports can hang with no feedback and feel broken.
-3. Update reporting so that weeks can contain prior/next month days. Currently a "week" can just be 31-MAR which is weird for analytics. Keep a week in the month and year its Monday falls on, but make sure the month and year have only their days.
+1. Bug: When changing the date of an activity that spans from one day to the next (e.g. starting 11:00 PM, ending 1:00AM next day), it overrides both start and end date to the same day, leading to negative duration. Workaround inthe meantime is to bring the task start time and end time back far enough to stay in the same date.
+2. Lazyload the log data as sometimes it takes ~3s to load a year's worth of data. Looks like the api call is still ~100ms so the rate limiter may be populating the DOM.
+3. Add a loading spinner to the import data section. Large imports can hang with no feedback and feel broken.
+4. Update reporting so that weeks can contain prior/next month days. Currently a "week" can just be 31-MAR which is weird for analytics. Keep a week in the month and year its Monday falls on, but make sure the month and year have only their days.
 
 ### Nice to Have
 1. Don't call an API Post when there is no change to the input on a cell in the log or settings.
