@@ -86,7 +86,7 @@ Similarly, the act of reviewing each of the activities in the log and categorizi
 
 ### Priority
 1. When token expires, it logs the user out and loses the task they were just working on. Should store the UID and the task data in local memory and not erase on logout, repopulating when logging back in.
-2. Update reporting so that weeks can contain prior/next month days. Currently a "week" can just be 31-MAR which is weird for analytics. Keep a week in the month and year its Monday falls on, but make sure the month and year have only their days.
+2. Update reporting so that weeks can contain prior/next month/year days. Currently a "week" can just be 31-MAR which is weird for analytics. Keep a week in the month and year its Monday falls on, but make sure the month and year have only their days for the aggregate stats. Take a look at how the first week of the year is handled too. For the week of 29-DEC in January 2026, it shows no days despite entries on 02-JAN. 
 3. Bug: When changing the date of an activity that spans from one day to the next (e.g. starting 11:00 PM, ending 1:00AM next day), it overrides both start and end date to the same day, leading to negative duration. Workaround inthe meantime is to bring the task start time and end time back far enough to stay in the same date.
 4. Lazyload the log data as sometimes it takes ~3s to load a year's worth of data. Looks like the api call is still ~100ms so the rate limiter may be populating the DOM.
 5. Add a loading spinner to the import data section. Large imports can hang with no feedback and feel broken.
